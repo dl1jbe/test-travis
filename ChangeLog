@@ -1,0 +1,3427 @@
+2017-02-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * doc/FAQ: add hints to correct own CQ zone to FAQ
+
+  * share/cty.dat: update cty.dat file
+
+2017-02-04  Ervin Hegedus <airween@gmail.com>
+
+  * src/main.c, src/parse_logcfg.c, src/tlf.h: Removed unused UNIQUECALL values
+
+2017-02-04  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c, src/globalvars.h, src/makelogline.c, src/readcalls.c,
+  src/showscore.c: Added UNIQUE_CALL_MULTI handling  
+  
+  - unique call signs can now be counted as multis for allband or per band. 
+   (Needed e.g. for minitest like contests).
+
+  * src/main.c, src/parse_logcfg.c, src/tlf.h, tlf.1.in: Accept
+  UNIQUE_CALL_MULTI keyword
+
+2017-01-12  Ervin Hegedus <airween@gmail.com>
+
+  * src/addcall.c, src/main.c, src/parse_logcfg.c, src/readcalls.c,
+  src/searchlog.c, src/tlf.h, tlf.1.in: Added new feature: MINITEST keyword to
+  support the Mini CW test  
+  Optional an argument may passed to MINITEST, instean of hardcoded value
+
+2017-01-30  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * macros/ax_with_curses_extra.m4: Better regocnition of <panel.h>  
+  
+  If ax_with_ncurses finds a ncursesw instance the former code checks only for
+  <ncursesw/panelh>. If not there the search fails. That lead to problems at
+  least in Arch Linux which has only <panel.h> installed. The patched version
+  here checks first for <ncursesw/panel.h> and if not found also for
+  <panel.h>.  
+  
+  Tested for the following distributions:  Gentoo, Debian 7..9, Linux Mint 17 
+  and 18.1, Arch Linux, Ubuntu
+
+  * src/get_time.c: clarify function of get_time()
+
+2017-01-20  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getctydata.c, tlf.1.in: Fix recognition of cq zone for 1Axxx stations
+
+2017-01-15  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: fix warning about redefinition of _GNU_SOURCE
+
+2017-01-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/parse_logcfg.c: drop remnants of old 'keyerport' variable
+
+  * src/changepars.c, src/keyer.c, src/main.c, src/sendbuf.c,
+  src/speedupndown.c, src/stoptx.c, src/write_keyer.c: switch to new 'cwkeyer'
+  variable
+
+  * src/background_process.c, src/callinput.c, src/gettxinfo.c, src/keyer.c,
+  src/main.c, src/qtcwin.c, src/rtty.c, src/sendbuf.c, src/sendspcall.c,
+  src/stoptx.c, src/write_keyer.c: switch to new 'digikeyer' variable
+
+2017-01-04  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/parse_logcfg.c: prepare for separate keyers for CW and
+  digimode
+
+2017-01-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getpx.c: better implementation of getpx()  
+  
+  - handles callsigns with only letters 
+  - correct handling of callsigns with long nummbers, e.g. DR2006Q or 9A800VZ
+
+2017-01-06  Ervin Hegedus <airween@gmail.com>
+
+  * src/parse_logcfg.c: Fixed wrong parsing for EXCLUDE_MULTILIST parameters
+
+2017-01-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/readcalls.c: Fix test for countrynr in countrylist  
+  
+  As getctydata() has a sideeffect of changing 'countrynr' itself we need to
+  switch to use a local variable 'countrynr_tocheck' for the comparison.
+
+2017-01-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/getexchange.c, src/gettxinfo.c, src/qtcwin.c,
+  src/rtty.c: simplify logic to call 'show_rtty'  Call 'show_rtty' whenever we
+  are in DIGIMODE.
+
+2016-12-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/sendqrg.c: add message if RIGPTT is not available for that rig
+
+2016-08-14  Nate Bargmann <n0nb@n0nb.us>
+
+  * share/logcfg.dat, src/callinput.c, src/gettxinfo.c, src/main.c,
+  src/parse_logcfg.c, src/sendqrg.c, tlf.1.in: Enable Hamlib CAT PTT if wanted
+  and available  
+  
+  Introduce a new keyword for logcfg.dat, RIGPTT, which is a directive to test
+  for a Hamlib radio backend's PTT via CAT capability.  If the backend reports
+  it is capable, Hamlib CAT PTT will be used in place of the netkeyer PTT
+  if Tlf is compiled with Hamlib support.
+
+2016-12-22  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/splitscreen.c: output of cluster message needs a packet screen  
+  
+  Each cluster message (external or from internal network between multiple
+  loggers) will be processed in several steps: putting it on cluster screen,
+  looking for a personal conversation, adding to bandmap. 
+  
+  The change guarantees that it will only be added to the cluster screen if
+  such an object got initialized.  (That would not be the case if we started
+  with the 'nopacket'-option or have no cluster configured).
+
+2016-12-21  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/splitscreen.c: Migrate packet screen to ncurses panels  
+  
+  Old implementation used a separate newterm call to get a separate display
+  for packet screen -- separate from normal logger display. It was quite a
+  hack but worked ok. In new ncurses6 newterm does no longer give us a
+  separate screen.  So we had to switch to use ncurses panels for the
+  packet screen. A popup panel covers inow the whole screen when we switch
+  to packet. That window is split into two derived windows for display of
+  cluster messages and a second one for input - as did the old
+  implementation.
+
+2016-12-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * macros/ax_with_curses.m4, macros/ax_with_curses_extra.m4, src/Makefile.am:
+  Use new AX_WITH_CURSES macro  
+  
+  New macro uses pkg-config for detecting libs and cflags for programs 
+  using ncurses and falls back to old finding out the
+  parameters 'by hand'.  For TLF it fixes:  - Using libtinfo if stripped out
+  from libncurses - Added feature_test_macros for correct color handling if
+  needed.
+
+2016-12-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * doc/README.RTTY: adapt README.RTTY
+
+2016-12-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/fldigixmlrpc.c: Make xmlrpc fldigi interface thread safe
+
+2016-05-07  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/cleanup.c, src/keyer.c, src/main.c, src/qtcwin.c, src/sendbuf.c,
+  src/write_keyer.c, src/write_keyer.h: refactor handling of send cw or digi
+  data  
+  Cleanup code so that all data for cw or digi keying goes through the
+  write_keyer() interface. 
+  That means anyone who wants to send code has to use the keyer_append() 
+  function which (in an thread safe manner) appends the data
+  to a keybuffer. The actual keying is done by a background thread which
+  regularly has to call the write_keyer() function.
+
+2016-12-04  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/parse_logcfg.c, tlf.1.in: Set fldigis default URL
+  automatically.
+
+  * src/fldigixmlrpc.c, src/fldigixmlrpc.h, src/stoptx.c: minor changes  
+  - rename to 'fldigi_to_rx()' 
+  - do not add to a string of unknown length. Send '^r' on separate call 
+    afterwars.
+
+2016-11-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/background_process.c, src/callinput.c, src/fldigixmlrpc.c,
+  src/fldigixmlrpc.h, src/gettxinfo.c, src/main.c, src/rtty.c, src/stoptx.c,
+  src/write_keyer.c, src/main.c, src/parse_logcfg.c, src/tlf.h, tlf.1.in: 
+  Allow new keyword FLDIGI to set up fldigi xmlrpc interface
+
+
+2016-12-02  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/background_process.c, src/callinput.c, src/edit_last.c, src/get_time.c,
+  src/getmessages.c, src/grabspot.c, src/lancode.c, src/score.c,
+  src/scroll_log.c, src/searchlog.c: Cleanup  
+  - fix type mismatches for 64 bit compilers
+  * src/sendbuf.c: cleanup some external declarations
+
+2016-11-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/showpxmap.c: Fix bug: autosend did not work as Enter
+  key was wrongly checked
+
+2016-11-17  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c: fix bandmap display  
+  
+  If stations in bandmap are really close to each other (0.1 kcs) after a grab
+  from bandmap tlf showed the call on the frequency below as actual frequency.
+  The above fixes the behaviour and does some minor corrections on comments.
+
+2016-11-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/edit_last.c: Fix bug: Enter did not end editing of last QSOs. fixed.
+
+2016-11-01  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: Fix bug: grab_next() not working without BMAUTOGRAB set  
+  
+  The grab functionality did not work if BMAUTOGRAB was not set. Closer
+  inspection showed that it worked shortly but got overridden by the tune-away
+  functionality. The main reason was the time delay between requesting the
+  change to a new QRG and the read back of the actual QRG. 
+  To fix it we  introduced a small state machine for grabbing spots with i
+  an intermediate IN_PROGRESS state which changes to REACHED as soon as 
+  the actual QRG reaches the spot QRG. And only then the tune-away 
+  functionality can do their work.
+
+  * src/qtcvars.h, src/readqtccalls.c: drop unused variable
+
+2016-08-01  Ervin Hegedus <airween@gmail.com>
+
+  * doc/README_QTC.txt, rules/waedc_eu, src/main.c, src/parse_logcfg.c,
+  src/qtcvars.h, src/qtcwin.c, tlf.1.in: QTC_RECV_LAZY config option to skip
+  the RECV restrictions
+
+2016-08-01  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * ChangeLog, NEWS, configure.ac: Prepare for tlf-1.2.4.2 bug fix release
+
+2016-07-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/show_help.c: drop old unused implementation of show_help(),
+  fix segmentation fault if help.txt gets found in local directory
+
+2016-07-18  zcsahok <ha5cqz@freemail.hu>
+
+  * src/netkeyer.c, src/netkeyer.h: netkeyer: streamlined (part 2)  - add
+  synthactic sugar - fix buffer overflow
+
+2016-07-03  zcsahok <ha5cqz@freemail.hu>
+
+  * src/netkeyer.c: netkeyer: streamlined (part 1)
+
+2016-06-26  Nate Bargmann <n0nb@n0nb.us>
+
+  * configure.ac: Remove unwanted indentation from '--help' output
+
+  * src/calledit.c, src/callinput.c, src/getexchange.c: Fix <Home> and <End>
+  keys for call input and exchange fields
+
+  * tlf.1.in: Update the man page  Many updates to the manual page.  Many more
+  corrections and additions likely remain.
+
+2016-05-16  zcsahok <ha5cqz@freemail.hu>
+
+  * src/sendbuf.c: sendbuf.c: fix replace_n, reworked ExpandMacro
+
+2016-05-11  Colin Tuckley <colint@debian.org>
+
+  * tlf.1.in: Fix spelling errors.
+
+2016-05-09  Ervin Hegedus <airween@gmail.com>
+
+  * src/gettxinfo.c: Aligned hamlib's passband argument to the new macro:
+  RIG_PASSBAND_NORMAL
+
+2016-05-04  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/checklogfile.c: fix possible ressource leaks
+
+2016-05-03  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/dxcc.c: support reloading the cty.dat database  Free the g_ptr_arrays
+  for dxcc and prefix data befre reallocation
+
+2016-05-03  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/readctydata.c, src/readctydata.h: split out loading of cty database
+  from named file  That allows a better testability as we can provide a
+  specialised cty.dat file.
+
+2016-05-03  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/show_help.c: fix memory leak
+
+2016-04-28 Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c: fix possible buffer overflows due to strncpy
+
+2016-03-25  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c: respect 'S'kip not dupes setting for bandmap
+
+  * src/addpfx.c: fix possible segmentation fault  Do only remember MAX_PFX_LEN
+  chars from prefix (atm 5). As prefix regognition is not perfect we get
+  sometimes longer prefix signatures which led to segfaults.
+
+2016-03-06  Thomas Beierlein <tb@forth-ev.de>
+
+  * Makefile.am: autoconf needs some more hints to find our macros
+
+2016-03-04  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: allow BMAUTOGRAB also in Run mode
+
+  * src/callinput.c: update run/s&p mode display after alt/ctrl-g
+
+2016-03-03  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c, src/bandmap.h, src/callinput.c: Implement BMAUTOGRAB  If set
+  callinput field will automatically grab an active spot from teh bandmap if
+  TRX frequency is near spot frequency.  Works only in S&P mode.
+
+2016-02-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: change autoadd triggering  Former version had difficulties
+  to distinct between callsigns entered by the operator and callsigns grabbed
+  from bandmap. Now 'freqstore' remembers the actual QRG as soon as the
+  operator enters any chars into the call input field. That frequency is used
+  to detect QRG changes (tuning away). In any other case (e.g. callsign grabbed
+  from bandmap) 'freqstore' stays 0.
+
+2016-02-09  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/background_process.c, src/callinput.c, src/main.c, src/parse_logcfg.c:
+  Move AUTOGRAB function to callinput()
+
+2016-02-08  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addspot.c, src/addspot.h: Refactor code to add a spot to bandmap  -
+  Split out the code to format a fake DX spot, add it to the own spot list and
+  send it to other stations on the LAN.
+
+  * tlf.1.in: Add description to man page
+
+2016-02-05  Ervin Hegedus <airween@gmail.com>
+
+  * src/background_process.c, src/main.c, src/parse_logcfg.c: Improve new
+  BMAUTOADD feature
+
+2016-01-26  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/ui_utils.c, tlf.1.in: Add some warning to lookup_keys()  If some
+  special key combinations (Alt/Ctrl-PgUp/PgDown) do not work on the terminal
+  give a message to the user and suggest using ':cqd'  Add that to the man page
+  also
+
+2016-01-25  Nate Bargmann <n0nb@n0nb.us>
+
+  * src/bandmap.c: Initialize dupe value when a new spot is created  Checking
+  with Valgrind memcheck generated in the report that, "Conditional jump or
+  move depends on uninitialised value(s)" in bmdata_write_file (bandmap.c:134).
+   The result is that various values could be written for the dupe value in
+  .bmdata.dat.  Fixed by setting the dupe variable to 0 in bandmap_addspot(). 
+  This variable is only used in bandmap_show() and is never stored back into
+  the allspots GList.
+
+  * src/main.c: Make sure that rig control is closed properly on exit  If
+  Hamlib is enabled in the build, close the rig port and release the rig
+  instance on exit.
+
+2016-01-24  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/main.c, src/ui_utils.c, src/ui_utils.h: determine key
+  codes for extended keys during startup
+
+2016-01-23  Nate Bargmann <n0nb@n0nb.us>
+
+  * src/changepars.c: Combine EXIT and QUIT stanzas  The case stanzas for EXIT
+  and QUIT were identical so combine them.
+
+  * src/sockserv.c: Use memmove() for overlapping strings.  Checking Tlf with
+  Valgrind showed that memcpy() was assigning a string back onto itself.  The
+  Glibc documentation says doing so will result in undefined behavior and
+  recommends using memmove() instead.
+
+  * doc/keynames.txt, src/callinput.c: Use keyname() to test for Ctrl/Alt
+  PageUp/Down keys  Testing has shown that the ordinal values for these
+  extended keys are defined in the terminfo database and vary across systems. 
+  Use the ncurses keyname() function along with strcmp() to determine the keys
+  based on their names which appears to be consistent across the systems
+  tested.
+
+2016-01-21  Nate Bargmann <n0nb@n0nb.us>
+
+  * src/callinput.c, tlf.1.in: Add Alt-PageUp/PageDown keys for Auto_CQ delay 
+  Some terminals consume the Ctl-PageUp/PageDown keys (Xfce Terminal is one). 
+  Add Alt-PageUp/PageDown as alternatives for increasing or decreasing the
+  Auto_CQ pause delay time.
+
+2016-01-20  Nate Bargmann <n0nb@n0nb.us>
+
+  * src/splitscreen.c: Ensure keypad is called when exiting packet screen  When
+  the packet screen is opened, keypad(entwin, TRUE) is called on the entwin
+  window.  When set_term(mainscreen) was called, the keypad was not being
+  redirected back to stdscr.  This should now be fixed and the arrow keys
+  respond as expected in the call input field.
+
+  * src/main.c: Don't call obsolete crmode() function  Ncurses documentation
+  advises that crmode() should not be used.  In curses.h it is a macro that
+  calls cbreak(), so call cbreak() instead for clarity.
+
+2016-01-17  Nate Bargmann <n0nb@n0nb.us>
+
+  * src/getexchange.c: Merge F11 processing with other F keys  The old code had
+  a skip in the numbering of the F keys jumping from 138 for F10 to 140 for
+  F11.  As Ncurses now assigns sequential values using the KEY_F(n) = KEY_F(0)
+  + n macro, this special handling is no longer necessary.
+
+2016-01-12  Nate Bargmann <n0nb@n0nb.us>
+
+  * src/audio.c, src/autocq.c, src/calledit.c, src/callinput.c,
+  src/changefreq.c, src/changepars.c, src/edit_last.c, src/getexchange.c,
+  src/keyer.c, src/main.c, src/messagechange.c, src/qtcwin.c, src/showpxmap.c,
+  src/tlf_curses.h, src/ui_utils.c, tlf.1.in: Process input keystrokes using
+  keypad()  Ncurses provides the keypad() function that maps most escaped key
+  codes to named constants found in curses.h.  The onechar() function has been
+  reworked to minimize the amount of key escapes that need to be caught. Those
+  that are caught are assigned values to match the Ncurses declared constants. 
+  Keys were tested on the Linux console, and the following X11 terminal
+  emulators, Xfce Terminal, Gnome Terminal, Xterm, and Qterm.  Update the
+  tested constants to match the Ncurses defined constants in the rest of the
+  sort where key_get() and key_poll() are called.  Ncurses will honor the value
+  of the environment variable ESCDELAY but to avoid the users having to set it,
+  use the set_escdelay() function to set the delay to 25 mS (default is 1000 mS
+  when unset) when the environment variable is unset.  Should that be too
+  short, users can set it via the usual method, i.e. 'export ESCDELAY=125'
+  would set a delay of 125 mS.
+
+2016-01-08  Nate Bargmann <n0nb@n0nb.us>
+
+  * doc/keynames.txt: Add keynames.txt  Document the decimal value and name
+  string as returned by keyname() and accepted by key_defined() for Ncurses by
+  default.  Keystrokes are processed from the various codes as shown by
+  'showkey -a' and escaped sequences are assigned to values corresponding to
+  the values and names in this file.
+
+2016-01-02  Ervin Hegedus <airween@gmail.com>
+
+  * src/fldigixmlrpc.c: Fixed hamlib-related variable compile error
+
+2016-01-02  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/fldigixmlrpc.c: fix unreachable code sequences
+
+  * src/fldigixmlrpc.c, src/gettxinfo.c: fix compile errors with
+  --disable-hamlib
+
+2015-12-31  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * configure.ac: Use mailing list address in AC_INIT macro  ... as suggested
+  by Nate N0NB
+
+2015-12-30  Nate Bargmann <n0nb@n0nb.us>
+
+  * configure.ac: Set temporary CFLAGS, CPPFLAGS, LIBS variables  To assist
+  AC_CHECK_LIB and AC_CHECK_HEADERS temporarily set the user variables to the
+  paths found by pkg-config.
+
+2015-12-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c: Correct logic for WYSIWYG multis coming in via LAN
+
+2015-12-20  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c: keep the list of possible multis sorted
+
+  * src/addmult.c: better tests for possible mults for ARRL_SS and
+  DX_&_SECTIONS  Old logic failed if some multi was part of a multi coming
+  later in the multi list (e.g. NE and ONE). Then tlf picked up the first one
+  and mised the other one. New logic scans all possible multis and keeps the
+  longest one which matches.  Added some syntactic sugar - ALL_BAND or PER_BAND
+  to make clear if a multi counts per band or only once per contest.
+
+2015-12-19  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c, src/addmult.h, src/main.c: cleanup logic 
+  init_and_load_multipliers is now responsible for (freeing and new) allocation
+  of the mults_possible array. It now handles empty multplier filenames
+  gracefully by giving back an empty mults_possible array. The former check for
+  naming the file is now the responsibility of the calling function (if
+  needed).
+
+2015-12-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c: Tests for empty strings are already handled in
+  remember_multi().  Furthermore for-loops tests themself if endcondition is
+  already fullfilled when entered. So we can drop some needless tests.
+
+2015-12-19  Nate Bargmann <n0nb@n0nb.us>
+
+  * macros/ax_with_curses.m4, src/tlf_curses.h, src/tlf_panel.h: Revert local
+  changes to macros/ax_with_curses.m4  Tom, DL1JBE, reported that on some
+  systems with ncursesw installed, the modification made to
+  macros/ax_with_curses.m4 caused a compilation failure.  The patch reverts
+  those changes and returns the macro file to its original format of serial 15.
+   Also updated src/tlf_curses.h and src/tlf_panel.h to extend the header macro
+  tests to the ncursesw headers.
+
+  * configure.ac, src/Makefile.am: Set LIBM_LIB to preserve the LIBS variable 
+  Autoconf documentation states the LIBS is a precious variable reserved for
+  the user.  Add macros to define HAVE_LIBM in config.h and LIBM_LIB in
+  src/Makefile.  Add LIBM_LIB to tlf_LDADD in src/Makefile.am.
+
+  * configure.ac, src/Makefile.am, src/addmult.c, src/readctydata.c,
+  src/rules.c, src/searchlog.c, src/show_help.c, src/writecabrillo.c: 
+  Define
+  PACKAGE_DATA_DIR in src/Makefile.am  Automake provides the predefined
+  'pkgdatadir' Makefile variable which is the same path as the previously
+  caclulated PACKAGE_DATA_DIR value in configure.ac.  Use it to set
+  PACKAGE_DATA_DIR as a -D value to the preprocessor via AM_CPPFLAGS in
+  src/Makefile.am which is passed to the source files during preprocessing. 
+  This conforms with current Autotools convention.  As PACKAGE_DATA_DIR is
+  longer defined in config.h, remove its include directive from those files
+  that were only including it for the PACKAGE_DATA_DIR definition.
+
+2015-12-18  Nate Bargmann <n0nb@n0nb.us>
+
+  * configure.ac, macros/ax_append_flag.m4, macros/ax_cflags_warn_all.m4,
+  macros/ax_require_defined.m4, src/Makefile.am: Use AX_CFLAGS_WARN_ALL to
+  determine compiler warnings  As CFLAGS is a a precious user variable, use the
+  AX_CFLAGS_WARN_ALL macro and have it assign the warning flag(s) to AM_CFLAGS
+  which is then substituted into the Makefile.  This macro determines the best
+  warning for various compilers.  This macro depends on the AX_APPEND_FLAG and
+  AX_REQUIRE_DEFINED macros (in separate files).
+
+  * configure.ac, src/Makefile.am: Update Fldigi XML RPC stanza in configure.ac
+   The Autoconf documentation states that LIBS and CFLAGS are reserved for the
+  user.  Refactor the Fldigi XML RPC stanza to avoid assigment to those
+  precious variables.  Instead assign new LIBXMLRPC_LIB, LIBXMLRPC_CLIENT_LIB,
+  and LIBXMLRPC_UTIL_LIB to tlf_LDDADD in src/Makefile.am.  Define the
+  HAVE_LIBXMLRPC, HAVE_LIBXMLRPC_CLIENT, and HAVE_LIBXMLRPC_UTIL macros for
+  config.h  Also use standard Autoconf macros instead of raw shell if
+  conditional and complete quoting per current Autoconf convention.
+
+  * configure.ac, src/Makefile.am: Update Hamlib stanza in configure.ac  The
+  Autoconf documentation states that LIBS and CFLAGS are reserved for the user.
+   Refactor the Hamlib stanza to avoid assigment to those precious variables. 
+  Instead assign the HAMLIB_CFLAGS and HAMLIB_LIBS generated by the pkg-config
+  macro to AM_CFLAGS and tlf_LDDADD in src/Makefile.am respectively.  Also use
+  standard Autoconf macros instead of raw shell if conditional and complete
+  quoting per current Autoconf standards.
+
+  * acinclude.m4, configure.ac, macros/ax_pthread.m4, src/Makefile.am: Update
+  to AX_PTHREAD macro  The newer ax_pthread.m4 macro file from the Autoconf
+  archive provides updated searches for determining the correct pthread
+  compilation flags and linking libraries.  This version also adds support for
+  clang which is becoming more important as a supported compiler.  As the
+  ACX_PTHREAD macro is now outdated, remove acinclude.m4 from the repository.
+
+  * configure.ac, src/Makefile.am: Use glib macro to detect glib  The glib
+  package includes its own M4 macro that uses pkg-config and also compiles
+  against the library to ensure it is available and suitable for use.  Also
+  check that pkg-config is really available and exit configure with an error if
+  it is not.
+
+2015-12-16  Nate Bargmann <n0nb@n0nb.us>
+
+  * macros/ax_with_curses_extra.m4: Fix bug in ax_with_curses_extra.m4  Found a
+  bug where the AX_WITH_CURSES_PANEL macro would incorrectly reset the
+  ax_cv_panel variable to 'no' when checking for the panel.h header a second
+  time even though it had found it as ncurses/panel.h on the previous call. 
+  Confirmed working by David, CT1DRB.
+
+2015-12-15  Nate Bargmann <n0nb@n0nb.us>
+
+  * 
+  Load ncurses.h via tlf_curses.h  Regarding Tlf Issue #51, this patch provides
+  consistency in the form of having the build system determine which ncurses
+  header file is available.  The build system will set relevant macros in
+  config.h and boilerplate in tlf_curses.h will select the proper include path
+  based on the tests. This patch confines the boiler plate to one file
+  resulting in minimal editing of the other source files.
+
+  this patch resolves the problem of distributions putting panel.h in
+  /usr/include/ncurses rather than in /usr/include.  Thanks to David, CT1DRB,
+  for reporting this issue with OpenSuSE LEAP 42.1.  The build system will set
+  relevant macros in config.h and boilerplate in tlf_panel.h will select
+  the proper include path based on the tests. This patch confines the
+  boiler plate to one file resulting in minimal editing of the other
+  source files.
+
+  * configure.ac, macros/ax_with_curses.m4, macros/ax_with_curses_extra.m4,
+  src/Makefile.am: Switch Autoconf Archive macros for Curses search  Use the
+  AX_WITH_CURSES and AX_WITH_CURSES_PANEL macros to determine the library and
+  header files location for curses.  For now the AX_WITH_CURSES macro is edited
+  to only look for ncurses or curses and not ncursesw.  Also the configure
+  options have been commented out as ncurses is required.  Macros are set in
+  config.h to allow testing for the proper header file location to include.
+
+2015-12-14  Nate Bargmann <n0nb@n0nb.us>
+
+  * configure.ac: Adjust tests in configure.ac  Reposition several tests to be
+  run before the tests for third party packages.  Temporarily comment out the
+  AC_PROG_GCC_TRADITIONAL and AC_FUNC_STRFTIME macros as the Autoconf
+  documentation states they are obsolescent.  Temporarily comment out the
+  AC_HEADER_STDBOOL macro as no source file loads stdbool.h at this time. 
+  Remove some header files from AC_CHECK_HEADERS as they are already checked by
+  the AC_HEADER_STDC macro.
+
+  * .gitignore, config.h.in, configure.ac: Remove generated config.h.in file 
+  Have Autoconf check for src/tlf.h to assure the build system is working in
+  the correct project directory.  As the AC_CONFIG_HEADERS macro will generate
+  config.h.in upon build system bootstrap, there is no need to carry this file
+  in the repository.  Have git ignore generated config.h.in.
+
+2015-12-08  Nate Bargmann <n0nb@n0nb.us>
+
+  * .gitignore: Have Git ignore backup files ( *~ ).
+
+2015-12-12  Ervin Hegedus <airween@gmail.com>
+
+  * doc/README.RTTY, src/fldigixmlrpc.c, src/gettxinfo.c, src/globalvars.h,
+  src/main.c: Added new feature: calculate the QRG in different modulations, as
+  FSK, LSB/USB
+
+2015-12-11  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/readcalls.c: Fix bug in using multarray_nr for 'SERIAL&SECTION' keyword
+   Back in tlf 0.9.10 there was some inconsistent handling of the index for
+  adding new multis to mults[] array. Sometimes they were counted from 0
+  sometimes from 1 (depending on the contest).  That was fixed some time ago
+  but there was a remnant in 'readcalls()' function left. That got dropped now.
+
+  * src/addmult.c: Fix bug in multcounting for ARRL-SS  'multarray_nr' is the
+  number of multis in 'mults[]' array. So to add a new mult first copy it into
+  the array and later increment the number of the multis.
+
+2015-12-09  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/main.c, src/ui_utils.c, src/ui_utils.h: Move refreshp() to ui_utils.c
+
+2015-12-03  Nate Bargmann <n0nb@n0nb.us>
+
+  * src/addmult.c: Test for existence of MULT_LIST in install directory  Code
+  only checked for MULT_LIST value in the working directory.  Now also check
+  for the file in the installation directory.  e.g. /usr/local/share/tlf
+
+2015-12-05  Nate Bargmann <n0nb@n0nb.us>
+
+  * tlf.1.in: Fix typos in tlf.1.in
+
+2015-11-30  Nate Bargmann <n0nb@n0nb.us>
+
+  * share/logcfg.dat, src/editlog.c, src/parse_logcfg.c: Prefer 'mcedit' for
+  logcfg.dat  Also make sure that old values of 'mc' and 'MC' are recognized. 
+  Enable 'mcedit' as a log file editor.
+
+  * rules/Makefile.am, rules/arrl160m_usa: Add ARRL 160m USA rules file  Ensure
+  the new file is distributed and installed.
+
+2015-11-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addcall.c: simplify switch logic in addcall() and addcall2()  Replace
+  hard coded bandmask and bandindex values by switch variable and finally merge
+  the different switch branches which are now identical together.
+
+2015-11-19  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addcall.c, src/globalvars.h, src/main.c, src/paccdx.c, src/readcalls.c,
+  src/showscore.c: extend countryscore[] to full number of bands  see
+  * src/addcall.c, src/globalvars.h, src/main.c, src/readcalls.c,
+  src/showscore.c: 
+  extend zonescore[] and countryscore[] array to full number of bands  Until now
+  there was a distinction between counting things for all bands (WARC and non
+  WARC) and counting zones and countries for contest bands only. The handling
+  can be simplified if we unify the handling and count zones and countries for
+  ALL bands. We can then ignore the non WARC entries for contest scoring.
+  Furthermore it is more easy to add additionla bands later.
+
+
+2015-11-28  Nate Bargmann <n0nb@n0nb.us>
+
+  * Move includes from headers as much as possible.  Only include
+  other header files in header files if absolutely necessary. Source files
+  declare all needed includes.  This results in five local headers that still
+  include other headers 
+  src/globalvars.h:2:# include "tlf.h" 
+  src/globalvars.h:5:#include <glib.h>
+  src/nicebox.h:24:#include <curses.h> 
+  src/qtcvars.h:21:#include "globalvars.h"
+  src/searchlog.h:24:#include <glib.h> 
+  src/sendqrg.h:25:# include <config.h>
+  src/sendqrg.h:29:# include <hamlib/rig.h>  
+  
+  This minimizes, but doesn't entirely eliminate depedency chains when
+  including certain header files.  All local header files should have include
+  guards so multiple include directives should not cause an error.
+
+
+2015-11-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addcall.c: Drop redundant test for 'pfxnummultinr>0'  'pfcnumcntidx >
+  -1' can only be true if 'pfxnummultinr > 0'.
+
+2015-11-22  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addcall.c: Fix lookup in pfxnummulti table  If getctydata() did not
+  find the country (returns 0) then pfxnumcntidx got set to a wrong number.
+
+2015-11-18  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c: fix calculation of remaining time during bandmap read 
+  Lastly spot->timeout got changed to unsigned. We must take care that we do
+  not get a wrap ariund if the diff between writing und reading the bandmap
+  data ist to big.
+
+  * src/bandmap.c, src/bandmap.h, src/time_update.c: Fix saving of bandmap data
+   Bandmap data are saved every 10s. It works now even if the bandmap is not
+  shown and even if auto CQ is working.
+
+  * src/autocq.c: Fix some small bug in auto_cq mode:  - Do a time_update() to
+  keep displayed time and bandmap actual (tnx HA2OS for reporting)
+
+2015-11-01  Thomas Beierlein <tb@forth-ev.de>
+
+  * share/Makefile.am, share/qtcmerge.py: Delete files no longer needed
+  * share/cty.dat: update cty.dat to VER20151027
+
+2015-10-28  Ervin Hegedus <airween@gmail.com>
+
+  * rules/waedc_dx_rtty, rules/waedc_eu_rtty: Modified rule files for WAE RTTY,
+  for EU and DX stations
+
+  * src/qtcwin.c: Some minor changes to fixup the QTC send method in RTTY
+
+  * src/genqtclist.c: Fixed gentclist item length bug:  if QTC set up as BOTH,
+  then the SEND length wasn't calculated correctly
+
+  * src/qtcwin.c: Fixed empty record command issue: if qtcrec_command was
+  empty, Tlf drops an error
+
+2015-10-31  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * datastructures: update description of datastructures
+
+  * src/background_process.c, src/main.c, src/searchlog.c, src/searchlog.h:
+  switch callmaster database to growing arrays
+
+  * src/searchlog.c: Allow comment lines in callmaster data base
+
+2015-10-30  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * share/callmaster: update callmaster file
+
+  * doc/FAQ: extend the FAQ
+
+2015-10-25  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/clusterinfo.c: drop unused code, initialize spot array
+
+2015-10-27  Ervin Hegedus <airween@gmail.com>
+
+  * src/callinput.c: Fixed immediated auto_cq bug: if Tlf sends CQ in auto
+  mode, and op press the first letter of callsign, that will be lost
+
+2015-10-25  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/checklogfile.c, src/checkqtclogfile.c: Fix some NULL pointer warnings
+
+  * doc/FAQ: Add information about refreshing callmaster database and CTY.DAT
+  to FAQ
+
+2015-10-22  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * README: drop reference to not longer accessible wikispaces pages
+
+2015-10-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c: Cleanup bmdata_read_file  - fix memory leak - close file
+  pointer - restructre parsing loop - simplify
+
+  * src/writecabrillo.c: Close opened file pointers in case of error
+
+2015-10-11  Ervin Hegedus <airween@gmail.com>
+
+  * src/bandmap.c: Added new feature: save bandmap state when bandmap state
+  changed, and 10 secs elapsed till last write; this file will read by Tlf when
+  starts again
+
+2015-10-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c: Do not show QRG in bandmap when no active rig control in use
+   Show bandmap around center frequency for actual selectzed band and mode.
+
+2015-09-22  Ervin Hegedus <airween@gmail.com>
+
+  * rules/waedc_dx, rules/waedc_dx_rtty, rules/waedc_eu, rules/waedc_eu_rtty,
+  share/qtcmerge.py, src/writecabrillo.c: Full 'QTC' line support in cabrillo
+  output
+
+2015-09-13  Ervin Hegedus <airween@gmail.com>
+
+  * src/qtcwin.c: Fixed fill QTC time bug: after the last fill, the minutes
+  remained in all lines
+
+2015-09-22  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * ChangeLog, NEWS: Add missing NEWS and ChangeLog entries for tlf-1.2.2_pre1
+
+2015-09-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c, src/bandmap.h, src/parse_logcfg.c, src/time_update.c:
+  Improve bandmap display code
+  - display actual QRG on bandmap
+  - center bandmap around QRG
+  - update bandmap every second
+  - do not show WARC spots in contest mode
+
+2015-09-13  Ervin Hegedus <airween@gmail.com>
+
+  * src/qtcwin.c: Fixed fill QTC time bug: after the last fill, the minutes
+  remained in all lines
+
+2015-08-30  Ervin Hegedus <airween@gmail.com>
+
+  * src/bandmap.c: New feature: better handling of bandmap for WAE stations  -
+  show station as workable on bandmap as long as it has any QTC capable flags
+  left
+
+2015-09-01  Ervin Hegedus <airween@gmail.com>
+
+  * src/qtcwin.c: New feature: Ctrl-R to start and stop QTC recording  - show
+  recording state (on/off)
+
+2015-08-31  Ervin Hegedus <airween@gmail.com>
+
+  * src/main.c, src/parse_logcfg.c, src/qtcvars.h, src/qtcwin.c, tlf.1.in: New
+  feature: QTC_AUTO_FILLTIME  - CTRL-F shortkey to fill the first two letters
+  of QTC time
+
+2015-08-27  Ervin Hegedus <airween@gmail.com>
+
+  * src/background_process.c, src/lancode.c, src/lancode.h, src/qtcutil.c,
+  src/qtcutil.h, src/qtcvars.h, src/qtcwin.c, src/readqtccalls.c: New feature:
+  new QTC capable flags:  - 'L': 'later', 'N': 'NO' for callsigns, - indicates
+  them in bandmap and worked window - send QTC flags through LAN to another
+  nodes
+
+  * src/bandmap.c, src/main.c, src/parse_logcfg.c, src/qtcutil.c,
+  src/qtcutil.h, src/qtcvars.h, src/readqtccalls.c, src/searchlog.c, tlf.1.in:
+  New feature: initial QTC capable callsigns list, and indicates them in
+  bandmap and worked window
+
+2015-09-05  Ervin Hegedus <airween@gmail.com>
+
+  * src/background_process.c, src/lancode.c, src/lancode.h, src/qtcutil.c,
+  src/qtcutil.h, src/qtcwin.c, src/readqtccalls.c: New feature: QTC flags
+  sending through LAN to another nodes, when user mark a callsign.
+
+2015-08-05  Ervin Hegedus <airween@gmail.com>
+
+  * src/qtcwin.c: Added new feature: move to next field in callsign/serial/qtc
+  nr fields with SPACE or ENTER
+
+  * src/qtcwin.c rules/waedc_eu: 
+  Fix some minor problems as result to last WAEDC SSB
+
+2015-08-14  Thomas Beierlein <tomjbe@gentoo.org>
+  * Fix handling of ITUMULT and WAZMULT keyword
+    CQ and ITU zones gets scored in the same 'zones[]' array. The commit
+    fixes the following problems:  
+    - zones[] array was to small (only for 40 CQ zones)
+    - display of worked zones did not work
+    - rescoring did not recognize the already worked zones.
+2015-08-03  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/splitscreen.c: fix segfault due to possible buffer overrun
+
+2015-04-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * rules/Makefile.am, rules/aadx_as, rules/aadx_dx: Add All Asian DX contest
+
+2015-07-10  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/addcall.c, src/makelogline.c: Fix PFX_MULT_MULTIBAND logic  *
+  PFX_MULT_MULTIBAND counts prefix as multi, when country/continent is excluded
+
+2015-07-09  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/initial_exchange.c: Fix potential memory leak
+
+2015-04-30  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/showscore.c: clean up of display code for PFX_MULT_MULTIBAND
+
+2015-04-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addpfx.c, src/addpfx.h, src/globalvars.h, src/readcalls.c,
+  src/showscore.c: cleanup PFX_MULT_MULTIBAND logic
+
+  * src/addcall.c, src/addcall.h, src/main.c, src/parse_logcfg.c,
+  src/readcalls.c, tlf.1.in: Add EXCLUDE_MULTILIST keyword
+
+2015-07-07  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addcall.c, src/globalvars.h, src/main.c, src/makelogline.c,
+  src/parse_logcfg.c, src/readcalls.c, src/searchlog.c, src/tlf.h, tlf.1.in:
+  Add PFX_NUM_MULTI keyword
+
+2015-06-20  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/changepars.c, src/main.c, src/printcall.c, tlf.1.in:
+  autosend now supports manual start feature (see issue #12).  * Set :char to
+  'm' for manual mode. Enter key starts sending cw but you can type additional
+  characters to the call sign. As soon as tlf sent all characters it sneds the
+  exchange.
+
+  * src/log_to_disk.c, src/main.c, src/prevqso.c, src/prevqso.h: resending of
+  last qsonr honors also last report
+
+  * src/sendbuf.c, src/sendbuf.h: factor out conversion to short cw numbers
+
+  * src/sendbuf.c, src/setcontest.c: drop contradictionary setting of
+  shortqsonr for ARLL_SS
+
+2015-05-31  dh5fs <dh5fs@users.noreply.github.com>
+
+  * src/prevqso.c: update "repeat number" string  its better to send "5NN" as
+  prefix before repeating the number then NR, some people react better to that
+  under low S/N conds
+
+2015-04-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addcall.c, src/addpfx.c, src/globalvars.h, src/main.c,
+  src/makelogline.c, src/parse_logcfg.c, src/readcalls.c, src/showscore.c,
+  tlf.1.in: add multi scoring for prefixes per band  - new keyword
+  PFX_MULT_MULTIBAND - adapted counting and display
+
+2014-07-02  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/parse_logcfg.c, src/readcalls.c, src/readcalls.h,
+  src/score.c, tlf.1.in: add more keywords for CONTINENT handling  -
+  CONTINENTLIST continents to score points for - CONTINENT_LIST_POINTS points
+  for the continent from CONTINENTLIST - USE_CONTINENTLIST_ONLY Zero points for
+  other continents
+
+2014-06-21  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/parse_logcfg.c, src/score.c, src/showscore.c, tlf.1.in: add
+  BANDWEIGHT_MULTIS and BANDWEIGHT_POINTS keywords  - allow to give a weight
+  for the multis on different bands e.g. BANDWEIGHT_MULTIS=160:4,80:3,20:2 -
+  Multis for Bands not in list are multiplied by 1 - allows to give a weight
+  for the points on different bands - Points for Bands not in list are
+  multiplied by 1
+
+2015-03-01  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/score.c: refactored for better test and maintenance  The goal was to
+  get a better understanding or the point scoring logic and to allow easy
+  extensions in future.  - Split score() into contest specific rules and
+  universal point scoring logic - factored out some common functions - added
+  some comments and made structure more clear
+
+2015-02-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/parse_logcfg.c, src/score.c: cleanup and fix COUNTRYLIST=
+  handling  
+  - Fix initialisiation of countrynr
+
+2015-02-22  Nate Bargmann <n0nb@n0nb.us>
+
+  * configure.ac, tlf.1.in: Update manual page to current conventions  The man
+  pages project provides guidelines for writing manual pages. This rewrite
+  attempts to bring the Tlf man page up to those standards. It is likely that
+  several errors and omissions still exist.
+
+2015-02-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/Makefile.am, src/onechar.c, src/onechar.h, src/ui_utils.c: Move
+  onechar() routine and make it static  We hide the onechar() routine to force
+  the use of the new key_get() and key_poll() routines.  That is a first step
+  to switch to a different handling of key input. The next step will be a
+  switch to curses keypad mode where curses decodes the ESC sequences itself.
+  That will allow for: - handling more terminal types - resizing the program
+  window - accepting mouse input
+
+2015-02-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/audio.c, src/bandmap.c, src/calledit.c, src/callinput.c,
+  src/changefreq.c, src/changepars.c, src/checklogfile.c, src/deleteqso.c,
+  src/edit_last.c, src/focm.c, src/getexchange.c, src/keyer.c,
+  src/listmessages.c, src/main.c, src/messagechange.c, src/muf.c,
+  src/setparameters.c, src/show_help.c, src/showpxmap.c: unify key input
+  handling  - move usage of 'getchar()' to 'key_get()' getchar() bypassed the
+  curses key input routines. So we drop them and use key_get() instead to ask
+  for the next key from the user.  - curses getch() does not handle multi
+  character escape sequences (e.g. function keys) well. So we switch to using
+  the new key_get() function which will give us only one key code per key
+  press.  - switch to key_get in all remaining cases where onechar() was used.
+
+  * src/audio.c, src/autocq.c, src/callinput.c, src/getexchange.c: use new
+  key_poll() function  Change all places where we only poll for keypresses
+  without waiting to use the new key_poll() function.
+
+  * src/ui_utils.c, src/ui_utils.h: add utility functions for non/blocking user
+  input
+
+2015-02-02  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/audio.c, src/autocq.c, src/callinput.c, src/changepars.c,
+  src/cleanup.c, src/clear_display.c, src/clusterinfo.c, src/freq_display.c,
+  src/log_to_disk.c, src/logit.c, src/muf.c, src/nicebox.c, src/printcall.c,
+  src/rtty.c, src/searchlog.c, src/showinfo.c, src/showpxmap.c,
+  src/splitscreen.c, src/time_update.c, src/writecabrillo.c: Use
+  modify_config() instead checking 'use_rxvt'
+
+  * src/Makefile.am, src/ui_utils.c, src/ui_utils.h: Add files to provide User
+  Interface utilities  - Linux terminal requires A_BOLD to be set for most
+  attributes. Instead of adding the check for use_rxvt to each attribute
+  settings we provide modify_attr() function to do it instead.
+
+2015-02-03  Thomas Beierlein <tb@forth-ev.de>
+
+  * many files... 
+  fixup #include files  -
+  add include guards - drop includes already included by tlf.h - sort out
+  otherwise inherited includes and make them explicit
+
+2015-01-24  dh5fs <dh5fs@users.noreply.github.com>
+
+  * share/darcmults: darc_mults  Multiplier file for DARC contests (Oct/14)
+
+2015-01-18  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/Makefile.am, src/background_process.c, src/getexchange.c, src/logit.c,
+  src/logit.h, src/main.c, src/parse_logcfg.c, src/set_tone.c, src/set_tone.h,
+  src/write_tone.h: drop unneeded include file (write_tone.h)  - function is
+  already exported by set_tone.h - cleanup according includes
+
+  * src/callinput.c, src/changepars.c: rework display of remaining sections in
+  multiplierinfo
+
+2015-01-17  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getctydata.c, src/getctydata.h: backport fixes from waedc-qtc, add
+  include guards
+
+  * src/calledit.c, src/callinput.c, src/getwwv.c, src/globalvars.h,
+  src/logit.c, src/scroll_log.c, src/searchlog.c, src/showinfo.c: Fix lint
+  reports and cleanup  - cleanup old crap from globalvars.h - fix potential
+  truncations in handling of timeoffset - fix conditions never met in
+  callinput.c - fix possible NULL pointers going into file functions
+  (searchlog.c, ) - fix warning about uninitialized call2[] variable - Exit if
+  logfile could not be opened (scroll_log.c)
+
+  * src/bandmap.c, src/rtty.c, tlf.1.in: backport some fixes from waedc-qtc
+  branch
+
+2014-12-30  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/listmessages.c, src/logit.c, src/main.c, src/messagechange.c,
+  src/parse_logcfg.c: cleanup  * switch to using SP_TU_MSG and CQ_TU_MSG
+  instead of hardcoded value * fix 'parse_logcfg()'
+
+  * src/listmessages.c, src/listmessages.h, src/tlf.h: adapt :list command  *
+  :list now shows also the S&P_CALL_MSG * fix twisted definition of SP_TU_MSG
+  and CQ_TU_MSG * add #include guard
+
+  * src/parse_logcfg.c, tlf.1.in: Allow to use a custom S&P message instead of
+  the autogenerated one.  * extend message[] field by one * add new Keyword
+  S&P_CALL_MSG * Use the new S&P_CALL_MSG if set
+
+  * src/main.c, src/sendspcall.c, src/tlf.h: Allow to use a custom S&P message
+  instead of the autogenerated one.  * extend message[] field by one * Use the
+  new SP_CALL_MSG if set
+
+2014-10-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: Unify sending of call in S&P mode.  - Normally the key is
+  handled by using 'sendspcall()' after <enter> key. - F1 key in empty call
+  field did also send the own call but by separate code. Now we use
+  'sendspcall()' in these case too.
+
+2014-12-22  Ervin Hegedus <airween@gmail.com>
+
+  * src/rtty.c: Seek gMFSK.log to end of the file, when Tlf starts
+
+2014-12-20  Reiner Herrmann <reiner@reiner-h.de>
+
+  * scripts/soundlog: Remove bashisms in sh script.
+
+  * scripts/soundlog: Drop -d /dev/dsp1 in favor of default.  Taken from Debian
+  patch by John AC6SL <jnogatch@gmail.com>.
+
+  * scripts/soundlog: Change hardcoded home directory with $HOME.  Taken from
+  Debian patch by John AC6SL <jnogatch@gmail.com>.
+
+2014-11-03  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/fldigixmlrpc.c, src/fldigixmlrpc.h: New code from airween to read
+  offset frequency from fldigi via xmlrpc  - Added new configure option:
+  --enable-fldigi-xmlrpc - Added fldigixmlrpc.[ch] files to read the carrier
+  value of Fldigi - Modified affected parts of code, when indicated/used the
+  RIG freq: * show frequency at right middle part in main window * store the
+  correct freq when user grabs the spot * restore the correct freq when user
+  loads a station from the bandmap  - finally add missing #include and
+  include-guard
+
+2014-10-31  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c: Convert CALL= from logcfg.dat always to upper case.  -
+  Pierre VE3KTB reported that cqww scoring did not work correctly if he enters
+  his own call in mixed or lower case. Thanks for the report.
+
+2014-10-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/main.c: Fix use of Alt-0..Alt-9 messages  - message[]
+  field had one member to much. Range of input keys was also one too wide.
+
+2014-10-26  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c: comment usage of cw/digi/phone messages
+
+2014-10-09  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/keyer.c: put keyer into a popup window  - define keyer window size and
+  position - pop up a panel at keyer start and hide when it stops
+
+2014-09-24  Ervin Hegedus <airween@gmail.com>
+
+  * src/main.c, tlf.1.in: Added new startup argument: '-r', which disables
+  radio control
+
+2014-09-24  Ervin Hegedus <airween@gmail.com>
+
+  * src/getexchange.c, src/makelogline.c: Added extra check for exchange field
+  for CQ-WW-RTTY  - CQWW RTTY contest requires the two letter province for US
+  and Canada stations in the exchange.
+
+  * src/logit.c: Modified automatic cq zone nr copy to comment variable, if
+  that's not empty  - If the user modified the exchange field, which was filled
+  out by Tlf from cty.dat, then Tlf rewrite the original value if switching
+  bqack forth between call input and comemtn field.
+
+  * src/getexchange.c, src/makelogline.c: Added extra check for exchange field
+  for CQ-WW-RTTY
+
+  * src/logit.c: Modified automatic cq zone nr copy to comment variable, if
+  that's not empty
+
+  * src/main.c: Added new startup argument: '-r', which disables radio control
+
+2014-09-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c: fix initialization of digi modems.  - write_tone() works only
+  for NET_KEYER and therefore calling it in the wrong context gave only an
+  error resulting in switching back to SSB mode.
+
+2014-09-07  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/sendbuf.h: make sendbuf() and buffer[] private  - new code should use
+  sendmessage() instead
+
+  * src/keyer.c, src/main.c: cleanup keyer() - second part  - correct logic for
+  sending - do not send control characters to the keyer - drop no longer used
+  logic to buffer input and display it via buffer[] and buloc. That code was
+  not functional for a long time. Even in 0.9.10 it was no longer used
+  correctly.
+
+2014-09-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/keyer.c, src/sendbuf.c, src/sendbuf.h: cleanup keyer() - first part  -
+  use sendmessage() instead of sendbuf() - cleanup some unused code
+
+2014-09-02  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/logit.c, src/speedupndown.c: use sendmessage() instead of sendbuf()
+
+  * src/speedupndown.c: Refactor speedup() and speeddown()
+
+2014-09-02  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/Makefile.am, src/callinput.h, src/getexchange.h, src/keyer.h,
+  src/parse_logcfg.c, src/speeddown.c, src/speeddown.h, src/speedup.c,
+  src/speedup.h, src/speedupndown.c, src/speedupndown.h: merge speedup.c and
+  speeddown.c to speedupndown.c  - there is a lot of duplicated code which can
+  be factored out
+
+2014-09-01  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/background_process.c, src/callinput.c, src/changepars.c,
+  src/getexchange.c, src/prevqso.c, src/sendspcall.c: Use sendmessage(msg)
+  instead of sendbuf()
+
+2014-08-31  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/background_process.c, src/background_process.h, src/callinput.c,
+  src/changepars.c, src/getexchange.c, src/keyer.c, src/logit.c, src/main.c,
+  src/prevqso.c, src/prevqso.h, src/sendspcall.c, src/sendspcall.h,
+  src/speeddown.c, src/speeddown.h, src/speedup.c, src/speedup.h: cleanup  -
+  refactor all declarations of 'extern char buffer[]' to sendbuf.h preparing a
+  later drop of sendbuf() function and replacement by sendbuf(char *msg).
+
+  * src/sendbuf.c: factor out macro expansion from sendbuf() function
+
+2014-08-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/displayit.c, src/displayit.h, src/sendbuf.c, src/sendbuf.h: fix
+  displayit()  - functions relied on termbuf temrinated with newline. Dropped
+  last character in display if not present.
+
+2014-06-20  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/clusterinfo.c, src/clusterinfo.h, src/time_update.c: cleanup
+  clusterinfo()  - split out functions not belonging to the cluster display
+
+2014-06-19  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/clusterinfo.c, src/clusterinfo.h, src/main.c, src/splitscreen.c:
+  cleanup clusterinfo()  - drop compiler warnings - simplify - cleanup include
+  files - add include guard - move datastructures to file scope - rename 'ptr'
+  variable to 'nr_of_spots'
+
+2014-06-18  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/getmessages.c, src/main.c, src/muf.c, src/qrb.c, src/qrb.h,
+  src/showinfo.c, src/showinfo.h: cleanup qrb calculation  - change internal
+  representation of station coordinates from string to double numbers - drop
+  usage of global variables and make them local funtion parameters - cleaunp
+  include files - add include guard
+
+2014-06-17  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/main.c, src/muf.c, src/muf.h, src/sunup.c, src/sunup.h: cleanup call of
+  sunup() function  - move global vars to parameters - cleanup includes - add
+  include guard
+
+2014-06-01  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * datastructures, src/clusterinfo.c, src/main.c, src/printcall.c,
+  src/sendbuf.c: a little cleanup  - make global variable local - fix doxygen
+  syntax - update description of datastructures
+
+2014-05-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/background_process.c, src/main.c: restructure threading logic  -
+  background thread gets started as before but main logging function 'logit()'
+  stays in the main thread - add an cleanup function via atexit() to stop
+  background thread
+
+2014-05-24  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/rtty.c, src/rtty.h: add correct deinitialisation of RTTY
+  controller
+
+2014-05-19  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/startmsg.c: restructure main()  - factor out option parsing
+  and curses initialization - defer color initialisation until logcfg.dat is
+  read - factor out loading of databases - minor fixes to failure handling -
+  factor out initialisation of hamlib, packet and lan connection - factor out
+  initialisation of keyer device
+
+2014-05-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addcall.c, src/bandmap.c, src/clusterinfo.c, src/focm.c,
+  src/globalvars.h, src/main.c, src/readcalls.c, src/recall_exchange.c,
+  src/searchcallarray.c, src/tlf.h: add a structure to represent worked
+  stations  - move single fields containing parts of the information to a
+  common struct ('callarray[]', 'call_band[]', 'call_exchange[]' and
+  'call_country') - rename 'callarray_nr' to 'nr_worked'
+
+2014-04-27  Ervin Hegedus <airween@gmail.com>
+
+  * tlf.1.in: Adding new config option and macro
+
+2014-04-26  Sebastian Kricner <sebastian.kricner@funwelt.de>
+
+  * src/callinput.c: Fragezeichen für Rufzeichen hinzugefügt
+  - Wenn im Eingabefeld ein Fragezeichen eingegeben wird und es kein 
+  leeres Feld ist, werden die Buchstaben in CW gesendet, gefolgt von 
+  einem Fragezeichen.
+
+2014-05-07  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addcall.c, src/searchlog.c: Extend searchlog() to show warc bands
+  - works only in QSO or DXPED mode where you are allowed to work the WARC bands
+  - fix for contest mode if there are some warc qsos in log (will not be shown
+  now)  Based on HA2OS initial work on that. Thanks Ervin.
+
+2014-05-04  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c, src/focm.c, src/showscore.c: use new IsWarcIndex()
+
+  * src/addcall.c, src/readcalls.c: add statistics info also for warc bands
+  - countryscore and zonescore are evaluated only for non-warc bands
+
+  * src/addmult.c, src/tlf.h: prepare for display of WARC bands  
+  - add entries to tlf.h
+  - complete conversion table 'inxes[]' from band index to band mask
+  - add macros IsWarcMask() and IsWarcIndex()
+
+2014-04-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/splitscreen.c: handle newterm() not being able to allocate a second
+  screen  
+  - happens for ncurses 5.8 and 5.9 with --enable-sp-funcs 
+  - do not change color settings in that case and do not switch to 
+    the packetscreen which is NULL resulting in a segfault
+
+2014-05-01  Ervin Hegedus <airween@gmail.com>
+
+  * src/sendspcall.c, tlf.1.in: add hiscall before send "DE" if SEND_DE is used
+  in DIGIMODE
+
+  * src/sendbuf.c, tlf.1.in: added new placeholder: ! for exchange of other
+  station
+
+2014-04-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * tlf.1.in: add documentation for MY_QRA (needed for Stewperry contest)
+
+2014-03-02  Ervin Hegedus <airween@gmail.com>
+
+  * src/gettxinfo.c, src/sendqrg.c: Handle RIG_ENIMPL and RIG_ENAVAIL response
+  from hamlib's rig_get_vfo() call  
+  - call rig_get_freq() if rig_get_vfo() is not implemented 
+  - error codes are reported as negative numbers
+
+2014-04-21  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * config.h.in, configure.ac: Drop test for GNU compatible malloc from
+  configure.ac  The test seems to fail sporadically (e.g. reported for OpenSUSE
+  13.1). That test only checks that malloc does return a valid pointer for an
+  requested memory block of size 0. As we do not use these behaviour we do not
+  need to check for it.
+
+2014-02-15  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/locator2longlat.c, src/showscore.c: split show_summary for stewperry
+  from other display  
+  - ARRL FD uses POWERMULT as an real multiplier, but only as integer value. 
+    So round it to nearest integer and use it as multiplier. 
+  - for STEWPERRY the POWERMULT may be a fractional number and multiplies the
+    final score by that multiplier.
+
+2014-02-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/locator2longlat.c, src/main.c, src/qrb.c, src/qrb.h, src/score.c,
+  src/showinfo.c: unify QRB calculation  
+  - rename old qrb() to qrb_() and change it to use the new qrb() for 
+    real work 
+  - move calc_qrb() to qrb() 
+  - add comments about positive sign for east longitudes to qrb() and
+    locator2longlat()
+
+2013-10-14  airween <airween@gmail.com>
+
+  * src/log_to_disk.c: Modified log_to_disk.c for keep the new logfile format:
+  column 80 contains the '*'.
+
+2014-02-09  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/focm.c, src/main.c, src/score.c, src/setcontest.c, src/showpxmap.c,
+  src/showscore.c: rename internal contest identifier to 'focm'
+
+  * src/Makefile.am, src/foc.c, src/foc.h, src/focm.c, src/focm.h, src/score.c,
+  src/setcontest.c, src/showpxmap.c, src/showscore.c: renamed file to focm.[ch]
+  for FOC Marathon
+
+2013-08-06  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/callinput.c: Fix input of new CW weight factor with Alt-w
+
+2012-05-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/displayit.c, src/keyer.c, src/sendbuf.c: some cleanup for keyer logic 
+  - Fix comments - drop unneeded code - leaving keyer switches back to correct
+  mode (RUN/S&P)
+
+2014-02-02  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c: add missing parentheses
+
+2014-02-08  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/background_process.c, src/clusterinfo.c, src/gettxinfo.c,
+  src/searchlog.c, src/sendqrg.c: further cleanup of minor problems  
+  - make variable static to allow only local access 
+  - initialize rigfreq in different files 
+  - handle problem if file could not be opened
+
+2014-02-02  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/readcalls.c: fix some minor problems  
+  - make array index unsigned 
+  - leave function if logfile could not be opened
+
+2014-02-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: drop unneeded tests of HAVE_LIBHAMLIB and redundant code
+  * src/gettxinfo.c, src/main.c, src/sendqrg.c: make rigfreq local
+
+2014-02-04  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/sendqrg.c, src/sendqrg.h, src/startmsg.h: cleanup header files and add
+  include guards
+
+2014-02-04  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/sendqrg.c, src/sendqrg.h: drop all remaining native_rig_ functions
+  * src/gettxinfo.c: drop all calls to native_rig_ functions from gettxinfo()
+  * src/gettxinfo.c, src/sendqrg.c, src/sendqrg.h: drop native_rig_reset_rit()
+  * src/main.c, src/sendqrg.c: drop unneeded native_rig_get_mode()
+  * src/sendqrg.c, src/sendqrg.h: drop init_ and close_ function for native_rig
+  * src/main.c: disabling rig control if no hamlib library compiled in
+  * src/main.c, src/parse_logcfg.c, src/sendqrg.c: Drop old logic which allowed
+  to have only a rigportnumber  
+  - RIGPORT expects a whole portname (e.g. /dev/ttyS0")
+
+  * src/log_to_disk.c: add header file to fix implicit declaration of score2()
+
+2014-01-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * share/cabrillo.fmt, share/cty.dat: update files (thanks OK1RR)
+  * src/foc.c: score 6banders as 5banders with an additionla bonus
+
+2014-01-28  airween <airween@gmail.com>
+
+  * src/showscore.c, tlf.1.in: Round final score when POWERMULT is float
+
+2014-01-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/foc.c, src/foc.h, src/showpxmap.c: add list of countries to work  
+  - scan initial exchange file and build list of countries 
+  - display which countries are worked and which are missing 
+  - Call with Alt+M
+
+2014-01-27  airween <airween@gmail.com>
+
+  * src/showscore.c, tlf.1.in: Fixed POWERMULT config keyword
+  * src/main.c, src/score.c, src/showscore.c: Handle POWERMULT config variable
+
+2014-01-26  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/foc.c: changed display of scoring results
+
+2014-01-19  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/keyer.c, src/parse_logcfg.c, src/sendqrg.c, src/sendqrg.h,
+  src/speeddown.c, src/speedup.c, src/tlf.h, src/write_keyer.c: drop support
+  for ORION_KEYER  
+  - A check on the mailing list showed that nobody seems to be interested in 
+    that feature. It was also not mentioned in the man page or on Rein's 
+    old tlf page.
+
+2014-01-23  airween <airween@gmail.com>
+
+  * src/getexchange.c, src/parse_logcfg.c, src/score.c: Adding POWERMULT
+  keyword, and multiple the calculated points with it (Stewperry rules, #7)
+
+2014-01-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/foc.c, src/foc.h, src/getsummary.c, src/showscore.c, src/showscore.h:
+  writecabrillo uses new function 'get_total_score()'  
+  - In case we have complex scoring rules these function can redirect 
+  to a contest specific calculation
+
+2014-01-21  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/readcalls.c: initialize complete call statistics  
+  - rescoring works by rereading the logfile and building the whole 
+    statistical data from there. Until now band and country data for 
+    worked calls got not reinitialized.
+    Therefore we got wrong result when deleting the last call and rescoring.
+
+  * src/foc.c: fix scoring for FOC marathon  1 point per QSO 2 points per
+  country 5 points per continent 5b qso gets 10 points bonus 6b qso gets 15
+  points bonus Gx4FOC joker counts double
+
+  * rules/Makefile.am, rules/foc, rules/focmarathon, share/cabrillo.fmt,
+  src/setcontest.c: renamed contest 'foc' to 'focmarathon', added
+  keydefinitions  - Thanks OK1RR.
+
+2014-01-18  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/globalvars.h, src/main.c, src/makelogline.c: cleanup  
+  - move scoring logic to 'makelogline' 
+  - refactor padding with spaces and simplify
+
+  * src/makelogline.c: delimit strcat operations  
+  - from time to time we have segfaults from copying to long information 
+    fields into the logline. Then we are past the next column. If we 
+    later try to fill up the space we get a segfault. 
+  - Now we delimit all strcat operations which can have a variable
+    field length.
+
+2014-01-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/makelogline.c: split contest independent and dependent part of log line
+
+  * src/makelogline.c, src/makelogline.h: start cleanup makelogline  function
+  gave segfaults more than once. Needs a serious overhaul.  
+  - add include guard
+  - move include files to .c 
+  - sort out different tasks 
+  - sort order of preparing time and qso number
+
+  * src/callinput.c: fix bug in autosend start logic  
+  - triggered autostart even if only a frequency for band change was entered 
+  - new logic checks if inputfield contains a plain number and does 
+    not start autosend if true
+
+2014-01-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * rules/Makefile.am, rules/foc: add foc rules file
+  * src/foc.c: score continents correctly
+  * src/foc.c, src/foc.h, src/showscore.c: implement basic display of contest
+  score
+
+2014-01-11  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c: fix wrong setting of LAN designator
+  * src/foc.c, src/foc.h: fix declaration syntax
+
+2014-01-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/foc.c, src/foc.h, src/score.c, src/score.h: add basic scoring logic for
+  qsos  
+  - report 1 one for normal qso 
+  - regex match Gx4FOC/xxx and give him 2 points 
+
+  * src/foc.c, src/foc.h, src/main.c, src/setcontest.c: contest recognition and
+  initialization
+
+2014-01-09  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/foc.c, src/foc.h: added contest files
+  * src/Makefile.am: start handling of FOC contest  
+  * src/parse_logcfg.c: drop unneeded code dupliction 
+
+2014-01-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addcall.c: adapt evaluation of LAN Logline to longer prefixes prepared
+  by makelogline
+
+2013-12-31  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/gettxinfo.c, src/sendqrg.c: call 'rig_get_vfo' before using
+  RIG_VFO_CURR  
+  - allows to switch VFO on the rig without loosing control by tlf. 
+    Tnx HA2OS for help.
+
+2013-12-28  airween <airween@gmail.com>
+
+  * src/getexchange.c, src/score.c: Fixed Stewperry QRB calculation error
+
+2013-12-23  airween <airween@gmail.com>
+
+  * rules/stewperry: Added rules/stewperry rule file
+
+  * src/getexchange.c, src/locator2longlat.c, src/locator2longlat.h,
+  src/parse_logcfg.c: Fixed Stewperry rules: check MYQRA when Tlf starts, and
+  check the station's QRA as exchange
+
+2013-12-15  airween <airween@gmail.com>
+
+  * src/Makefile.am, src/getexchange.c, src/globalvars.h,
+  src/locator2longlat.c, src/locator2longlat.h, src/main.c, src/parse_logcfg.c,
+
+2013-12-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/parse_logcfg.c, tlf.1.in: Drop keyword '2EU3DX_POINTS'  
+  - Keyword was not supported for a long time 
+  - It got recognized but did nothing.
+
+2013-12-19..12-21  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/background_process.c, src/background_process.h, src/logit.c,
+  src/logit.h, src/main.c, src/autocq.c, src/main.c, src/sendbuf.c, 
+  src/sendbuf.h, src/callinput.c, src/getexchange.c, src/keyer.c,
+  src/listmessages.c, src/messagechange.c, src/parse_logcfg.c,
+  src/writeparas.c, src/bandmap.c, src/bandmap.h, src/checklogfile.c, 
+  src/globalvars.h, src/grabspot.c, src/main.c,
+  src/sendbuf.c, src/sendqrg.c, src/showinfo.c, src/splitscreen.c,
+  src/time_update.c: Cleanup a lot of inconsistencies (see log messages for
+  detail)
+
+2013-12-15  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/showscore.c: fix wrong order of tests for mult counting  
+  - DX_&_SECTIONS has precedence over MULT_LIST in UNIVERSAL contest 
+  - Thanks Ed W3NR and Fred DH5FS for pointing it out
+
+2013-12-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/autocq.c, src/callinput.c, src/getexchange.c, src/keyer.c, 
+  src/logit.c, src/sendbuf.c, src/sendbuf.h: send CW/DIGI messages only 
+  if not empty
+  - avoid turning on and off transmitter in CW and Digimodes if message 
+    is empty 
+  - Thanks Ervin HA2OS for pointing out.
+
+2013-12-12  dh5fs <dh5fs@users.noreply.github.com>
+
+  * tlf.1.in, share/help.txt, src/parse_logcfg.c, src/lancode.c: Allow 
+  portnumbers for LAN-stations via ADDNODE command
+
+2013-11-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * help.txt, share/Makefile.am, share/help.txt, src/callinput.c,
+  src/changepars.c, src/show_help.c, src/show_help.h: move 'help.txt' to
+  <prefix>/share/help.txt  
+  - add 'help.txt' to distribution 
+  - install 'help.txt' as default hep file 
+  - can be overridden by an own 'help.txt' in actual directory 
+  - correct description for ':help' command in man page
+
+2013-11-28  dh5fs <dh5fs@freenet.de>
+
+  * src/callinput.c: Update callinput.c  modify CFM message to complete QSO
+
+  * help.txt: Create help.txt  online help file <ALT+h>
+
+2013-11-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/dxcc.c, src/dxcc.h: add special handling for '*...' prefixes  
+  - strip '*' from prefix 
+  - remember in describing structure
+
+2013-11-24  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/makelogline.c: move zone id in logline a char right  
+  - make room for 5 letter prefixes (e.g. HK0/a) 
+
+2013-11-18..11-20  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/Makefile.am, src/cw_utils.c, src/callinput.c, src/clear_display, 
+  src/cw_utils.h, src/parse_logcfg.c, src/getexchange.c, src/main.c,
+  src/speeddown.c, src/speedup.c, src/tlf.h, src/write_keyer.c, src/autocq.c,
+  src/speed_conversion.h: refactor CW speed logic
+  - add new 'cw_utils'
+  - move speedstr definition to cw_utils  
+  - move 'speed_conversion' to cw_utils 
+  - add SetCWSpeed and use it in parse_logcfg 
+  - add GetCWSpeed and start to use it
+  - drop separate handling of 'keyspeed' variable
+  - move calculation of CW message length to cw_utils
+
+2013-11-19  airween <airween@gmail.com>
+
+  * share/cty.dat: Added new cty.dat, released 2013-11-18
+  * share/callmaster, share/cty.dat: New databases from Ervin HA2OS
+
+2013-11-15  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/lancode.c, src/parse_logcfg.c, tlf.1.in: Initialise tlf's 
+  node designator (THISNODE=...) to 'A'  
+  - Even if you do not use the LAN features and forgot to name your node 
+    in logcfg.dat the node designator is used internally for adding a QSO 
+    to the bandmap. 
+  - Add further check logic to allow only designators 'A'..'H'
+  - document default setting for node designator in man page
+
+2013-11-11..12-09  Thomas Beierlein <tomjbe@gentoo.org>
+2013-12-06  dh5fs <dh5fs@users.noreply.github.com>
+
+  * src/callinput.c, src/changepars.c, src/keyer.c: implement reworked autosend
+  feature
+  - starts after 2..5 characters 
+  - shorter calls have to be finished with ENTER key 
+  - calculates the expected time to send the call from cw speed and switches 
+    to sending exchange after that time is reached
+  - Allow autosend feature only in RUN mode
+  - Adapt ':char' command (accept 0 (off) or 2..5 as number of characters 
+    before autosend start. Changing input can be dropped with ESC)
+  - SPACE and DOWN no longer starts autosend feature, but jumps to exchange
+    field
+  - A progress indicator shows the characters already sent.
+
+2013-10-28  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/main.c, src/muf.c, src/muf.h: cleanup use of internal variables  
+  - use M_PI from math.h 
+  - make some global variables privat
+
+2013-10-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * rules/cqww, share/cabrillo.fmt: fix cabrillo definition  
+  - use TX identifier at end of line only for cqww contest
+
+2013-10-25  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: Fix handling of non existing cabrillo format file
+
+2013-10-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/log_to_disk.c: Change accepted line length from LAN  - Log lines are
+  longer since we added the QRG to its end. The LAN code missed that change
+  until now. 
+  - Thanks airween HA2OS for the patch.
+
+2013-08-27  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/addcall.c, src/addmult.c, src/checklogfile.c, src/editlog.c: close
+  opened files if not needed
+
+2013-08-12  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/changepars.c, src/splitscreen.c: Cleanup screen when
+  leaving TLF with active cluster  
+  - If packet cluster was active when you leaved TLF there was an intermix 
+    of tlf's screen content and the screen before tlf where started. 
+    Reason was the second terminal for the cluster display which must 
+    be closed with endwin() before leaving the program. Added
+    the code to cleanup_telnet() and called that routine when leaving tlf.
+
+2013-08-07  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/changepars.c, src/listmessages.c: Some small fixes  
+  - give a short hint to use PgUp or PgDwn for :scv 
+  - simplify display of cw messages (:list)
+
+
+2013-08-06  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/callinput.c: Fix switching on/off the score window
+
+2013-07-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/clusterinfo.c, src/gettxinfo.c, src/main.c, src/sendqrg.c: Improve 
+  handling of problems in rig link  
+  - Report any error during startup of hamlib rig link 
+  - In case of errors ask if user want to continue without rig control. 
+    Otherwise exit tlf. 
+  - If get_frequency fails (maybe because rig is switched off) report
+    frequency as 0.0. Do not change band settings from tranceiver. 
+    (Show and log the actual frequency as 0, meaning no rig control available 
+    at the moment)
+  - writecabrillo() will insert start-of-band frequency in log calculated from
+  band information
+
+2013-07-15  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/keyer.c, src/messagechange.c: CW messages can no
+  longer be edited by Shift+Fx key  
+  - The quick recall of an Fx message via Shift+Fx for edit got dropped 
+    as the recognition of the keys is not reliable for some terminal emulators. 
+    So we do no longer rely on that feature. Use :mes or edit 
+    the config file instead.
+
+2013-07-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/showpxmap.c: fix display of worked countries for cqww  
+  - uses line 1..5 omitting the line with the contest information 
+  - clear the lines before und after use
+
+2013-07-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/showscore.c: Fix display of contest statistics  
+  - Q/M calculates now QSOs per multi (was: points per multi) 
+  - display Q/M with one digit after decimal point 
+  - display Q/M always 
+  - show band rate only for bands with more than ten QSOs
+
+2013-07-07  Nate Bargmann <n0nb@n0nb.us>
+
+  * many files...: Correct GPL boilerplate in sources  
+  The license boilerplate in the source files incorrectly referenced the
+  Library General Public License.  Given that only 'COPYING' (GPL 2.0) is
+  included in the tlf directory, and all other documentation references the
+  GPL, the reference to 'Library' is presumed to be incorrect.   With the
+  concurrance of Tom and Rein, this patch set removes the word 'Library' from
+  the boilerplate in all .c and .h files where it occured.  Include minor Free
+  Software Foundation mailing address correction with this patch set.
+
+2013-06-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/dxcc.c, src/readctydata.c: make parsing cty.dat more robust  
+  - ignore country lines which do not have the needed components
+
+2013-06-18  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/log_to_disk.c, src/makelogline.c: Move reset of RST to another place  -
+  Setting RST to its default value after a QSO is not the job of a routine
+  which prepares the log line for the last QSO. 
+
+2013-06-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  *  rules/arrlfd, src/callinput.c, src/clear_display.c, src/getexchange.c,
+  src/log_to_disk.c, src/main.c, src/makelogline.c, src/parse_logcfg.c,
+  tlf.1.in: add new configuration switch NO_RST  
+  - will be needed for contests which do not record any exchange 
+    (e.g. ARRLFD or CW Open)
+  - do not add RST into log and do not show RST if NO_RST is set, just 
+    add '---' instead  
+  - suppress redisplay of RST after PgUp/PgDwn if NO_RST is set, as it 
+    does not make sense to change RST if no RST is used.  
+  - document NO_RST in man page and add it to arrlfd rule file
+
+2013-06-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * share/cabrillo.fmt: ARRL-FD do not use cabrillo. Tnx Nate N0NB
+
+2013-06-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/makelogline.c: Fix for WYSIWYG_ONCE  
+  - points were not written for WYSIWYG_ONCE
+
+  * src/getsummary.c, src/writecabrillo.c: simplify  
+  - use get_nr_of_points() and get_nr_of_mults() to calculate claimed score 
+
+2013-06-03  Nate Bargmann <n0nb@n0nb.us>
+
+  * rules/arrlfd: rules/arrlfd: Update to current FD rules  
+  - The arrlfd rules file was dated so bring it up to date with 
+    changes in Fd and TLF.
+  - fix recognition of ARRL Field day rules  (rule file asked for 
+    'arrlfd' contest, but parser looked for 'arrl_fd')
+
+2013-05-06  Nate Bargmann <n0nb@n0nb.us>
+
+  * configure.ac: configure.ac: Enable silent make rules  Use Autoconf help
+  string formatter for Hamlib option.
+
+2013-05-05  Nate Bargmann <n0nb@n0nb.us>
+
+  * share/arrlsections: arrlsections: Add new Canadian sections  Remove invalid
+  sections.
+
+2013-05-30  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/showscore.c, src/showscore.h: Refactor calculation of total score  
+  - factor out calculation of nr of points and mults
+
+2013-06-02  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/showscore.c: factor out common code into 'display_header()'  - gets
+  list of bands to show as parameter
+
+  * src/showscore.c: simplify display of headerline and setting of active band 
+  - rename bandindex_normal and bandindex_warc to bi_normal/warc 
+  - show bands in header line according to the list of band indices in 
+    bi_normal or bi_warc
+  - simplify highlighting the  actual band (do it now on the fly while 
+    printing the line in first place.)
+
+2013-05-30  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/showscore.c: Refactor display algorithm for individual score lines  
+  - define the column 'START_COL' where the display of the score should start 
+  - use a table for defining the column number where we display the different
+    score points for each band 
+  - use two further tables to define which bands should be shown for each 
+    column 
+  - rollup the display of the 6 columns into one loop using the above 
+    mentioned tables
+
+2013-05-30  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/showscore.c: Change display of score for ARRL SS  
+  - Display points and mults (here section) for ARRL SS similar to 
+    other contests.
+
+2013-05-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/showscore.c: simplify showscore()  
+  - add some comments 
+  - drop unneeded variable initialisation 
+  - unify display of summary for different contests 
+  - factor out display of summary line
+
+2013-05-25  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/edit_last.c: Fix character input in edit_last()  
+  - display only visible part of logline
+
+2013-05-22  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: Fix frequency output for WARC bands in cabrillo file 
+  - Original code missed all cases for QSOs in WARC bands. No frequency
+    information for that bands were written to cabrillo file.
+  - Even if no WARC bands should be used in contests we add the correct
+  frequency output for these bands
+
+2013-05-21  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: Fix band output for 12m in ADIF file  
+  - Original code missed the case for QSOs in 12m band. The ADIF file 
+    got no band output for that band. Fixed.
+
+2013-03-17  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/changepars.c: Reread contest rules file after edit of logcfg.dat with
+  :SET or :CFG
+
+  * src/changepars.c, src/getsummary.c, src/writecabrillo.c: Refactor  
+  - move control of cluster display out to calling context 
+  - reuse code to ask for sent exchange 
+  - drop unused external variable declarations
+
+  * src/getsummary.c, src/getsummary.h: Rework to support Cabrillo v3.0 format 
+  - refactor code to ask for input 
+  - write some entries only to cabrillo file if user provided some input
+
+2013-01-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getsummary.c, src/getsummary.h, src/writecabrillo.c: Simplify writing
+  cabrillo header
+  - Until now the cabrillo header was written to a separate file by
+    'getsummary()' and finally copied together with the formatted QSO-lines.
+    Changed it so that we write the header direct to the final file and
+    therefore can drop the copying.
+
+2013-01-12  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * rules/arrlss, share/cabrillo.fmt: Add cabrillo definition for ARRL
+  Sweepstake
+
+2013-01-09  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c: Fix parsing of CALL in logcfg.dat  - drop trailing
+  whitespace - for now keep the trailing NL as a lot of code in other parts of
+  tlf rely on that NL cahracter
+
+2013-01-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c: Fix parsing of CONTEST, LOGFILE, KEYER_DEVICE and
+  TELNETHOST  
+  - Use g_strchomp to drop NL and trailing whitespaces from keywords 
+  - simplify with g_strlcpy
+
+  * src/parse_logcfg.c: Fix parsing controllerport (ignore trailing whitespace)
+
+2013-01-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c, tlf.1.in: Reduce minimal livetime for bandmap entries
+  to 30s (requested by DH5YM)
+
+2012-12-12  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getexchange.c: allow Ctrl-k to start keyer during getexchange()
+
+2012-12-09  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getexchange.c: Allow editing of exchange field  
+  - starts with 'left' key if exchange field is not empty 
+  - supports the following keys: 
+    - ctrl-A  start of line 
+    - ctrl-E  end of line 
+    - left    one char left 
+    - right   one char right 
+    - del     delete key under cursor 
+    - backspace  delete char left from cursor 
+    - any non control char   insert if string not to long
+
+  * src/getexchange.c, src/getexchange.h: Move prototypes of internal functions
+  to hide visibility  - add comments
+
+2012-12-24  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * NEWS, configure.ac: prepare for tlf-1.2.0_pre3 prerelease
+
+2012-12-12  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * doc/README.cabrillo: Add description of new cabrillo handling
+
+2012-12-08  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: Make token parsing reentrant.
+
+2012-10-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * doc/Makefile.am, doc/README.cab, doc/README.cabrillo, share/cabrillo.fmt,
+  src/writecabrillo.c: Add some more tokens to cabrillo handling  
+  - Drop old write_cabrillo code  
+  - You can now specify EXC1..EXC4 to address first to fourth space delimited 
+    token from exchange field  
+  - Rename README.cab file and fix spelling errors in cabrillo.fmt
+
+2012-12-05  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/autocq.c: Use stoptx() to stop auto_cq message.  Old code did overwrite
+  the right screen border in case of ESC key to stop sending.
+
+2012-11-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/getexchange.c: enable F-keys for digimode also in
+  exchange field  
+  - While in digimode the F-keys only worked in the input field. Changed 
+    logic so that they will also be accepted in the exchange field.  
+  - Support also F10 and F11 in exchange field.  
+  - While using CTCOMPATIBLE 'INS' key always send only a cw message even 
+    when in SSB mode. Fixed.
+
+2012-11-25  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/getexchange.c: simplify  
+  - drop unneeded cursor positioning 
+  - redraw call and comment input field before waiting for a new character 
+  - use printcall() and refresh_comment(), but only if needed 
+  - unify handling of band up and down 
+  - drop unneeded call to time_update()
+
+2012-11-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getexchange.c, src/searchlog.c: fix display of zone and section in
+  searchlog window
+
+2012-11-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c: Fix memory leak
+
+2012-11-25  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: Drop not needed duplication of code for handling Fx
+  message keys
+
+2012-11-24  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/changepars.c: Adapt behaviour of :SCVOLUME command.  
+  - Can be set even if sidetone device is console speaker.
+
+2012-11-22  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/parse_logcfg.c, tlf.1.in: Allow setting of SIDETONE_VOLUME
+  even if SOUNDCARD is not set.  
+  - To allow to turn off cwdaemons sidetone output it is needed to set 
+    the volume of the sidetone to 0. Until now that was only possible if 
+    SOUNDCARD was se in logcfg.dat which switches to a soundcard for sidetone 
+    output. 
+  - Fix for recognition of SIDETONE_VOLUME value (drop trailing \n) 
+  - Allow volume setting independent of choosen sidetone device. 
+  - Add information to man page.
+
+  * src/callinput.c: Cleanup old code
+
+  * src/initial_exchange.c, src/initial_exchange.h, src/main.c: Make errors in
+  initial exchange file more verbose. Thanks Mario DH5YM.  
+  - make_ie_list() checks format of initial exchange entries (exactly 
+    one call <comma> exchange) and complains about errors. It is difficult 
+    to find the problematic line for long exchange files. 
+  - New code reports the line number and ask for confirmation to continue 
+    without initial exchanges in case of error.
+
+2012-10-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * tlf.1.in: minor correction to man page
+
+2012-10-26  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: fix tune logic.  
+  - adapt to cwdaemons behaviour. It tunes only for a given time and 
+    than automatically stop. 
+  - So request some tuning time (6s) and allow for an early stop with 
+    any key press. 
+  - Change TUNE_UP constant if you want a different time.
+
+2012-10-24  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/getexchange.c, src/time_update.c: stop flickering
+  cursor while searchlog is shown  
+  - during wait for input in call input or exchange field the searchlog 
+    panel is regularly updated. That makes the cursor switch between 
+    different places and showing a flickering effect. 
+  - New logic dropped the time delay from 'time_update()' (as that function 
+    should not determine the speed of the keyboard polling) and added 
+    the delay into the polling loop so that the cursor is a long time in 
+    the input field.
+
+2012-10-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: convert file back to Unix LF endings
+
+2012-10-26  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/set_tone.c: work around bugs in cwdaemon versions  
+  - cwdaemon < 0.9.6 always set volume to 70% at change of tone freq 
+  - cwdaemon >=0.9.6 do not set volume at all after change of freq 
+    resulting in no tone output if you have a freq=0 in between 
+  - So... to be sure we set the volume back to our chosen
+    value or to 70% (like cwdaemon) if no volume got specified
+
+2012-10-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/sendspcall.c: use '}' and '{' only for MFJ1278 keyer to switch TX on
+  and off
+
+2012-10-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/sendbuf.c: correct parsing of special characters in sendbuf() function 
+  - old logic assumes that there is always a trailing newline so it checks 
+    only until strlen(text)-1 is reached 
+  - new code checks all characters until string end.
+
+  * src/write_keyer.c: shorten macro output in digimode  
+  - old implementation had 5 empty lines for each macro output 
+    (1 from message eol, 2 from write_keyer routine, 1 from echo, 
+    1 from fldigi) 
+  - dropped 1 of the lines in output string 
+  - used '-n' switch to force echo to not append a further newline 
+  - simplify command formatting
+
+2012-10-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getexchange.c, src/rtty.c: update miniterm also while in getexchange()
+
+  * src/rtty.c: make miniterm output more robust  
+  - strncpy may leave non terminated strings, so switch to g_strlcpy i
+  - mvprintw needs a format string to avoid interpretation of '%' signs 
+    in the received text.
+
+  * src/rtty.c: rework digimode receive routine 'rx_rtty()'  
+  - fix buffer overrun in rx_addtext 
+  - better logic to skip start of line info from GMFSK and FlDigi 
+  - do not skip start of line if serial modem (MFJ or similar)
+
+2012-10-18  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/parse_logcfg.c, src/parse_logcfg.h, src/rules.c: ask for
+  confirmation if errors in logcfg.dat or rule file detected  
+  - for some time tlf reports errors in both configuration files but gives 
+    user only 2 seconds time to read the problem. The changes records that 
+    some problems exists and ask the user after processing the files if 
+    we should continue or stop the program and fix the problem. That gives 
+    them time to read the problems and think it over.
+
+2012-10-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c, src/set_tone.c: fix control of sidetone output  
+  - CWTONE drops trailing newline now (was not recognized by cwdaemon 0.9.2 
+    if there was a trailing newline) 
+  - :tone did not initialize box correctly. Old screen contents showed 
+    through the frame.
+
+2012-10-09  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/parse_logcfg.c: Correct wording for some error message
+
+  * rules/arrl10m_dx: fix typo wrt CQ_TU_MSG
+
+2012-09-19  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getsummary.c: cut erase strings which are too long for screen width
+
+2012-09-17  Thomas Beierlein <tb@forth-ev.de>
+
+  * rules/arrl10m_dx, rules/arrldx_dx, rules/arrldx_usa, rules/contest,
+  rules/cqww, rules/eusprint, rules/lzdx, rules/pacc_dx, rules/pacc_pa,
+  rules/spdx_dx, rules/spdx_sp, rules/template, rules/wpx, share/cabrillo.fmt:
+  add some more cabrillo format specifications  
+  - rename wpx cabrillo format into UNIVERSAL 
+  - complete rule files with information which format to use 
+  - new format for EU-SPRINT contest
+
+2012-09-17  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: add handling of EXC_S item containing '#' special
+  character  
+  - use old 'getsummary' to ask for exchange for now
+
+2012-09-12  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: add handling of TX entry for cqww.m2 and other
+  contests
+
+2012-09-10  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/writecabrillo.c: Basic implemention of 'prepare_line' function  
+  - format entries according to list of items from QSO: line definition 
+  - add entry by entry to linebuffer 
+  - !! atm not complete
+
+2012-09-14  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/searchlog.c: Old code segfaults for really long calls in 'searchlog'  
+  - happens for long call signs which fill the call field 
+  - strchr return NULL if space is not found, so limit string only if 
+    a space is really found
+
+2012-09-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * share/cabrillo.fmt, src/writecabrillo.c: drop position from cabrillo format
+  definitions  
+  - Each field in the QSO line is separated by one space from the
+    next. 
+  - So knowing the length of each field we can determine the position
+    from that information if we have the field entries defined in order
+
+2012-09-09  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: Parse QSO logline into relevant pieces for
+  writecabrillo
+
+2012-09-07  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: Fill in  qso_t structure and start parsing the qso
+  line
+
+2012-09-09  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: fix possible segfault due to wrong allocation size
+
+2012-09-07  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: fix memory leak  The list of split parts of the entry
+  needs to be freed after being used.
+
+2012-09-04  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/writecabrillo.c: Parse each item description for QSO: line  
+  - convert item name to a enumed tag 
+  - parse and convert position and fieldwidth 
+  - add all converted items to an array in the format description
+
+2012-08-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: First steps to new 'write_cabrillo'  
+  - Complete rewrite of main flow for the function. !Not all 
+    functionality implemented. 
+  - 'read_cabrillo_format' lookup file with needed cabrillo format 
+    description in local dir or datadir and parses some keys 
+    (atm only 'QSO:') 
+  - QSO: key is splitted into separate items each describing one entry 
+    in cabrillos QSO: line.
+    Be aware !! Keywords have to be case sensitive
+
+  * share/cabrillo.fmt: First simple definition of a cabrillo format file
+
+2012-08-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c: Second part of reworked parsing logic  
+  - All keywords which require a parameter after an '=' use the 
+  preparsed fields[1] variable now. 
+  - To catch wrong syntax in the config file the macro PARAMETER_NEEDED
+  tests if needed that there was such a '=' in the config entry.
+
+2012-08-16  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/parse_logcfg.c: Fixes nasty problem in parsing of preferences from
+  logcfg.dat and rules file  
+  - David N1EA and Martin OK1RR reports not working CLUSTERLOGIN. 
+  - Reason was change in parsing logic done between tlf-1.0.5 and
+  tlf-1.1.0. TLF now stopped at keyword CLUSTER mas it was a substring of
+  CLUSTERLOGIN. So CLUSTERLOGIN got never called. Thorough inspection showed
+  that it may affect also other settings.  
+  - New logic starts by splitting the  inputline at a potential '=' sign.
+  First part: the keyword, second part (if available): the parameters. 
+  The keyword gets stripped on both sides, the parameter only from 
+  leading spaces. That allows something like ' CALL =  DL1JBE'. 
+  - All keywords in the keyword list were stripped from a trailing '='
+  sign. If you need to decide if it got called correctly, than look at the
+  second field in the parsed array.
+
+2012-08-23  Thomas Beierlein <tb@forth-ev.de>
+
+  * .gitignore, aclocal.m4: remove unneeded 'aclocal.m4' and add it to
+  .gitignore  
+  - They will be created automatically if you run 'autoreconf' after
+  an checkout. so there is no need to have it in the repository.
+
+2012-08-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/changepars.c, src/main.c, src/parse_logcfg.c: Add tilde expansion for
+  config file switch (-f)  
+  - -f command line switch allows use of an alternate logfile.
+  Until now it does not recognize '~' as abbreviation for the users
+  HOME directory (Thanks David N1EA for reporting). 
+  - If logfilename starts with ~/ it gets replaced by users home directory. 
+
+  * src/checklogfile.c: fix uninitialized variable
+
+2012-08-13  Thomas Beierlein <tb@forth-ev.de>
+
+  * tlf.1.in: comment CWBANDWIDTH= preference switch  
+  - Normally in CW mode tlf sets the (hamlib defined) default bandwidth 
+    during each switch of bands. 
+  - If you need a different bandwidth you can set it with these switch 
+    in logcfg.dat
+
+2012-08-10  Thomas Beierlein <tb@forth-ev.de>
+
+  * config.h.in, configure.ac, configure.in: Prepare for Automake-1.13 which no
+  longer accepts a configure.in  
+  - move configure.in to configure.ac 
+  - regenerate config.h.in
+
+2012-08-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * doc/Makefile.am, doc/README.cab, share/Makefile.am, share/cabrillo.fmt,
+  tlf.1.in: add rudimental files with description of new cabrillo mechanism and
+  format specification (needs to be completed). Document new CABRILLO=
+  statement for ruls file.
+
+2012-08-09  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/main.c, src/parse_logcfg.c: add recognition of new keyword CABRILLO= 
+  That keyword has to be used to name the cabrillo format definition to be used
+  when writing cabrillo logs.
+
+2012-06-26  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: first work for new writecabrillo
+2012-07-02  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: Use g_strstrip instead home made function
+
+  * src/checklogfile.c, src/checklogfile.h, src/main.c: Implement new logfile
+  check and repair operation.
+  - all line have to be 
+  a) a comment line starting with ';' or 
+  b) starts with a valid bandnumber 
+  - The length of each logline has to be LOGLINELEN (including \n) 
+  
+  a) If to long -> cannot handle that file type (possible truncation) 
+  b) If some line to short -> maybe old log format, so ask if it should 
+     try to repair (fill with needed amount of spaces).
+
+2012-07-01  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c: Add warning if console window is too small for TLF (needs at
+  least 25x80)
+
+2012-06-26  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: Write QRG to cabrillo file if available in log file
+
+2012-06-12  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: Write QRG to ADIF file if available in log file
+
+2012-01-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: renamed adif and cabrillo file according to OK1RR:
+  cabrillo:   <call>.cbr
+  adif:       <contest>.adi
+
+2012-06-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/makelogline.c, src/tlf.h: Record the working QRG in the log  i
+  ATTENTION!
+  New log line format in use! At the moment that is incompatible with old log
+  files. Back them up before experimenting. Code to migrate old log to new
+  format will follow in next days.  
+  - make logline 7 characters longer to accomodate the QRG with one decimal 
+    precision. 
+  - record QRG at end of logline if you have the rig online
+
+  * src/gettxinfo.c: Fix wrong check for lowest band frequency. rig_get_freq()
+  reports frequency in Hz so we have to check against 1800000 Hz for lower
+  border of 160m band.  Furthermore simplify switch logic and add an default
+  case if rig is not in ham band.
+
+2012-06-06  Thomas Beierlein <tb@forth-ev.de>
+
+  * configure.in: Abort configure if ncurses libs not vailable. Tnx Jens DK2AB
+  for pointing it out.
+
+2012-05-19  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/note.c: fix note input to add it to the internal recorded log lines and
+  to adapt to wider logline length
+
+2012-05-17  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/deleteqso.c, src/deleteqso.h: Simplify 
+  - Make logic independent of 'logline4'. Use 'qsos' instead. 
+  - check for filesize >= LOGLINELEN
+
+  * src/edit_last.c, src/edit_last.h, src/main.c: New implementation of
+  edit_last() to enable longer loglines and thus make room for record of QRG 
+
+  Needs a new mechanism to get and store editbuffer.  
+  
+  Former use of logline_edit field, which was shared with some other code for
+  displaying the last 5 qsos, was error prone. Use a separate editbuffer
+  instead and get the content from the qsos[] database every time we start to
+  edit a line. Write content of editbuffer back to qsos[] and file after
+  finishing the edit.  
+  
+  Furthermore refactor out common code  
+  - highlight and unhighlite line 
+  - limit len of displayed output line 
+  - make number of lines easier to configure 
+  - correct handling of empty log file 
+  - fix edit of upper line !! Be aware that edit on ';' notes is broken 
+  - better handling of <Tab>  to hop from field to field 
+  - move definition of logline_edit fields into  main.c
+
+2012-05-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/checklogfile.c, src/deleteqso.c, src/edit_last.c, src/editlog.c,
+  src/getmessages.c, src/globalvars.h, src/last10.c, src/main.c,
+  src/makelogline.c, src/readcalls.c, src/scroll_log.c, src/searchlog.c,
+  src/tlf.h: use LOGLINELEN to specify the size of a logline and the needed
+  checks and buffers
+
+2012-04-20  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c, src/cleanup.c, src/clear_display.c, src/main.c, src/note.c,
+  src/searchlog.c, src/showscore.c, src/tlf.h: Fix some more color settings i
+  - use C_ names wherever possible 
+  - Drop use of 'DUPECOLOR' and use only 'C_DUPE'. 
+  - invert color definition for 'C_DUPE' to avoid the STANDOUT attribute. 
+  - change 'attron' to 'attrset' as old color definition required always an 
+    'standout' attribute which got not reset by attron
+
+2012-04-18  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * rules/Makefile.am, share/Makefile.am: add forgotten files to Makefile.am
+  * ChangeLog, NEWS, configure.in: Prepare TLF-1.1.2 maintenance release (see
+  NEWS for details).
+  * share/usa_canada_states: remove old 'usa_canada_states' file, use
+  arrldx_mults instead
+  * rules/arrldx_dx, share/arrldx_mults: add actual mults file for ARRLDX
+  contest for DX and adapt path (tnx Fred DH5FS)
+
+2012-03-31  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * rules/arrl10m_dx, share/arrl10m_mults: add ARRL 10m contest 
+    (tnx Fred DH5FS)
+  * src/parse_logcfg.c, src/score.c: correct naming of functions
+  * src/score.c: simplify loop exit logic
+
+2012-03-18  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c: fix recognition of COUNTRY_LIST= keyword 
+  - multiplier_list was uninitialized. If it was not empty 
+    COUNTRY_LIST definitions would not be recognized 
+  - use glib for better handling of string termination
+
+2012-03-19  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/main.c, src/parse_logcfg.c, src/score.c: simplify COUNTRYLIST handling
+  - renamed 'multiplier_only' to 'countrylist_only' 
+  - renamed 'multiplier_points' to 'countrylist_points' 
+  - simplify naming scheme for local variables
+
+2012-03-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getexchange.c: rework checkexchange handling 
+  - fix out of bounds error resulting in a segfault 
+  - better maintainability by automatic calculation of loop boundaries 
+    for pattern scanning
+
+2012-02-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c: better regognition of unknown keywords in logcfg.dat
+  and rules file
+
+2012-02-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * rules/arrldx_dx, rules/pacc_dx, rules/spdx_dx: fix wrong keyword:
+  'RECALL_EXCHANGE' is 'RECALL_MULTS' now
+
+2012-02-19  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/audio.c: Simplify audio recording by factoring out common code
+
+2012-01-18  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c: simplify string handling
+
+2012-01-17  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/Makefile.am, src/printfield.c, src/printfield.h, src/showscore.c,
+  src/showscore.h: Merge printfield() into showscore.c  - only used for
+  showscore() - simplify printfield() function. - drop unneeded include file
+  from showscore.c
+
+2012-01-15  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * NEWS: Fix spelling error for G4KNO
+
+2012-01-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/calledit.c: simplify calledit()  
+    - drop not working keys for 'home' and 'down' 
+    - factor out display code 
+    - fix display of background for partials when leaving edit mode
+
+2012-01-12  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/changepars.c, src/main.c: Make sure that no packet related functions
+  get called if started with 'tlf -n'
+
+2012-01-12  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/makelogline.c, src/makelogline.h: Fix makelogline segfault  if not in 
+  contest mode Logline gets not cut back to 68 characters. Results in a buffer
+  overflow.  Add description of logline format
+
+2012-01-08  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * doc/Makefile.am, doc/README.ssb: Added README.ssb from Andy, G4KNO. Thanks
+  for contributing.
+
+2012-01-03  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * scripts/play_vk: fix spelling of unmute command. Tnx G4KNO
+
+2011-12-22  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * NEWS, doc/README: move tlf's history of changes to NEWS file
+  * tlf.1.in: adapt man page to new features
+
+2011-12-21  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * Makefile.am, NEWS, New_Bandmap.txt, doc/Makefile.am, doc/New_Bandmap.txt:
+  Move New_Bandmap.txt to doc/
+
+  * NEWS: summarize changes made between tlf-1.0.5 and tlf-1.1.0
+
+  * share/cty.dat: new cty.dat from OK1RR. Thanks
+
+2011-12-17  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * New_Bandmap.txt, share/logcfg.dat: document configuration of bandmap
+  filtering
+
+  * src/parse_logcfg.c: fix location of #endif line
+
+  * src/bandmap.c: leave some headroom for grabbing next frequency
+
+  * src/bandmap.c, src/checklogfile.h, src/logit.c, src/netkeyer.c,
+  src/printcall.c, src/showscore.c, src/splitscreen.c, src/startmsg.c,
+  src/tlf.h: further cleanup  - fix implicit declaration warnings - drop unused
+  variables
+
+2011-12-14  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/parse_logcfg.c, src/rules.c: cleanup  - drop unused variable - fix
+  wrong initialisation of 'buff'
+
+2011-12-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * tlf.1.in: Fix description of LOWBAND_DOUBLE keyword in man page.
+
+2011-12-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c: divide livetime by 2 as aging is done every two seconds
+
+  * src/parse_logcfg.c: allow configuration of bandmap filtering in logcfg.dat 
+
+2011-12-12  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c, src/tlf.h: fix recognition of keywords
+  - keywords with parameters did not work if keyword was not in first column
+
+2011-12-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c, src/bandmap.h: dupes will be skipped during ctrl-g 
+  - make that feature configurable via bm_config.skipdupes
+
+2011-12-11  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c, src/parse_logcfg.h: better report of unsupported config
+  keywords  
+
+2011-11-24  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/dxcc.c, src/grabspot.c, src/grabspot.h: fix prototypes  - fix missing
+  '#include <string.h>' - add missing prototype for 'grab_next' - change
+  prototype of grabspot to return void
+
+  * src/addmult.c: fix wrong check for empty string in multiplier file
+
+  * src/callinput.c, src/changepars.c, src/main.c, src/printcall.c, src/rtty.c:
+  Fix use of 'miniterm' variable  - clean old code - add comments - save and
+  restore variable if temporary disabled
+
+  * New_Bandmap.txt: Add some additional informations describing the new
+  bandmap functions.
+
+  * src/callinput.c, src/grabspot.c: Fix calculation of zone and prefix for
+  grabspot()  - Zone and prefix was not calculated correctly during grab of a
+  station from bandmap. It was needed to call 'getctydata()' instead of
+  'getctynr()' - Drop clear_display after grab. Now the info line is displayed
+  properly.  Thanks Fred DM3F for reporting.
+
+2011-11-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * INSTALL, configure.in: prepare for TLF-1.1pre3 release
+
+  * scripts/Makefile.am, scripts/play_vk, src/callinput.c: Use external script
+  'play_vk' for playing of SSB voice key messages
+
+  * share/Makefile.am: add list of usa_canada_states to installation files  -
+  in distribution since 0.9.11 but forgotten in Makefile.am
+
+2011-11-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getexchange.c: change parsing of section for ARRL SS  - trailing spaces
+  in mults_possible[] and cut out section string deleted - compare only pure
+  non-space strings
+
+  * src/getexchange.c: Fix possible segfaults  - old code segfaults if serial
+  number >9999 was entered - simplify reading of check value
+
+  * src/getexchange.c, src/searchlog.c, src/searchlog.h: Display parsing
+  results for ARRL SS  - displayed on lower line of Search panel again
+
+  * src/searchlog.c: fix display of needed sections  - readcalls cuts always 3
+  char to worked mults[] fro some contests - ignore possible trailing spaces in
+  compare
+
+  * src/clear_display.c: display contest name on info line
+
+2011-11-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * rules/Makefile.am: add forgotten general 'contest' rule file to installable
+  files
+
+  * rules/arrlss: Better defaults for CW messages  - exchange has to use serial
+  number instead of a fixed '1' - make check consistent between messages
+
+  * src/getexchange.c: Fix recognition of 'U' precedent  - got introduced late
+  and was not recognized properly - add some comments to the meaning of the
+  searchpatterns
+
+  * src/searchlog.c: some minor optimization  - drop unneeded statement - break
+  out of loop as soon as possible
+
+  * src/searchlog.c, src/showscore.c, src/showscore.h: Fix display of section
+  in ARRL_SS  - moved display code to searchlog.c - use SearchPanel for display
+  - thanks for reporting to Ben NJ8J
+
+2011-11-07  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/getexchange.c, src/logit.c, src/logit.h: make Ctrl-A
+  also work in exchange field  - calls addspot() to add the actual call to the
+  bandmap - correct hide of searchlog
+
+
+2011-11-07  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/readcalls.c: strip trailing spaces on comments from log file
+
+2011-11-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/changefreq.c, src/changefreq.h: hide cursor during frequnecy change
+
+  * src/callinput.c: Allow edit of old QSO's only if call field is empty
+
+  * src/calledit.c, src/callinput.c, src/getexchange.c: correct display of
+  cursor if searchwindow is shown  
+
+2011-11-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/searchlog.h: fix display of startup messages
+
+2011-11-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/listmessages.c: correct displayed message name for CQmsg
+
+2011-09-24  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c, src/tlf.h: Report unsupported config keywords during
+  startup
+
+  * rules/arrldx_dx, rules/arrldx_usa, rules/arrlfd, rules/arrlss,
+  rules/contest, rules/cqww, rules/dxped, rules/eusprint, rules/lzdx,
+  rules/pacc_dx, rules/pacc_pa, rules/qso, rules/spdx_dx, rules/spdx_sp,
+  rules/ssa_mt, rules/template, rules/wpx, src/parse_logcfg.c: change keywords
+  in parse_logcfg.c to correspond to man page  The keywords for CQ_TU_MSG,
+  VKCQM and VKSPM were not recognized correctly. Fixed.  Adapt contest rules to
+  changed keywords.
+
+2011-11-03  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getexchange.c: Send VKCQM and VKSPM voice messages after end of QSO  -
+  Drop a change made by Rein in tlf-0.9.22 to not send these messages if in SSB
+  mode 
+
+2011-11-01  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getexchange.c: '+' and 'INSERT' respect CTCOMPATIBLE mode also during
+  getexchange()
+
+2011-10-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: '+' and 'INSERT' respect CTCOMPATIBLE mode now  - if
+  callfield not empty both keys are working now only if CTCOMPATIBLE is set in
+  logcfg.dat
+
+2011-10-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/gettxinfo.c: Fix upper boundaries for 160 and 40 meters.  - Thanks Ben
+  NJ8J for reporting
+
+2011-10-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * aclocal.m4, configure.in: prepare for prerelease 2 of tlf-1.1  - fix
+  aclocal.m4
+
+  * src/clear_display.c, src/printfield.c, src/showscore.c: move score display
+  in upper right corner of display
+
+  * src/logit.c, src/searchlog.c, src/searchlog.h: Hide searchlog panel at more
+  points
+
+2011-10-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/muf.c: propagation display uses panel code now
+
+  * src/searchlog.c, src/searchlog.h, src/time_update.c: Use panel code for
+  show and hide of searchlog
+
+2011-01-30  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/nicebox.c, src/nicebox.h: factorisation to support nicebox for given
+  window 
+
+2011-10-20  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c, src/audio.c, src/autocq.c, src/background_process.c,
+  src/bandmap.c, src/calledit.c, src/callinput.c, src/changepars.c,
+  src/checklogfile.c, src/cleanup.c, src/clear_display.c, src/clusterinfo.c,
+  src/deleteqso.c, src/displayit.c, src/edit_last.c, src/editlog.c,
+  src/freq_display.c, src/getexchange.c, src/getmessages.c, src/gettxinfo.c,
+  src/grabspot.c, src/keyer.c, src/lancode.c, src/listmessages.c,
+  src/log_to_disk.c, src/logit.c, src/logview.c, src/main.c,
+  src/messagechange.c, src/muf.c, src/netkeyer.c, src/parse_logcfg.c,
+  src/printcall.c, src/readcalls.c, src/readctydata.c, src/recall_exchange.c,
+  src/rtty.c, src/rules.c, src/searchlog.c, src/sendbuf.c, src/sendqrg.c,
+  src/setparameters.c, src/show_help.c, src/showpxmap.c, src/showscore.c,
+  src/splitscreen.c, src/startmsg.c, src/writeparas.c: switch all refresh()
+  calls for use of curses panels  - add a fake refreshp() function which
+  replaces the old refresh() and calls 'update_panels()' followed by
+  'doupdate'. - serialize refreshp() calls from different threads
+
+2011-10-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c: fix delete of first line in bandmap (was one char to short)
+
+2011-01-28  Thomas Beierlein <tb@forth-ev.de>
+
+  * config.h.in, configure.in: Prepare usage curses panel library
+
+2011-10-17  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/clusterinfo.c, src/splitscreen.c: proper locking for spot_ptr[] array 
+
+2011-10-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * share/logcfg.dat, src/callinput.c, src/changepars.c, src/clusterinfo.c,
+  src/main.c, src/parse_logcfg.c, src/setparameters.c, src/tlf.h, tlf.1.in:
+  Drop old SPOTLIST display 
+  - ALT-a now switches between Nocluster->Cluster->Bandmap-> 
+  - 'cluster == MAP' displays the new bandmap and writes the last 8 spots to
+  Xplanet's marker file.
+
+2011-10-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/Makefile.am, src/cluster_bg.c, src/cluster_bg.h: Delete unneeded
+  cluster_bg.[ch] files  - functionality is now in clusterinfo.c
+
+  * src/background_process.c, src/background_process.h, src/cluster_bg.c,
+  src/clusterinfo.c: Move 'getclusterinfo()' to clusterinfo.c  
+
+  * src/cluster_bg.c, src/cluster_bg.h, src/clusterinfo.c, src/clusterinfo.h:
+  Move 'loadbandmap()' to clusterinfo.c
+
+2011-10-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/cluster_bg.c: change source of data for loadbandmap()
+
+2011-10-11  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/cluster_bg.c, src/main.c: cleanup unneeded code  -
+  drop double extern declarations - drop handling of spotinfo filed as nobody
+  uses that information
+
+  * src/cluster_bg.c, src/main.c, src/splitscreen.c: on the fly recognition of
+  WWV/WCY announcements 
+
+2011-10-07  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c: keep display of frequency memory (#) 
+
+2011-10-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c, src/addmult.h, src/globalvars.h, src/readcalls.c: refactor
+  registration of worked multiplier and multi initialisation 
+
+  * src/addmult.c, src/addmult.h, src/searchlog.c, src/searchlog.h: move
+  'load_multipliers()' to addmult.c
+
+  * src/addmult.c: drop old comment regarding 'wysiwymultsg' variable
+
+2011-10-05  Thomas Beierlein <tb@forth-ev.de>
+
+  * README: Edited README
+
+2011-10-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * .gitignore, src/showscore.c: Do not show mults per band in WYSIWYG_ONCE
+  mode. 
+
+2011-10-05  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/addmult.c, src/globalvars.h, src/main.c, src/readcalls.c,
+  src/showscore.c: Remove 'wysiwygmults' variable 
+
+  * src/addmult.c, src/changepars.c, src/getsummary.c, src/globalvars.h,
+  src/readcalls.c, src/showscore.c: Remove 'multcount' variable
+
+2011-10-02  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c: Further simplifications 
+
+2011-10-01  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c, src/changepars.c, src/getexchange.c, src/globalvars.h,
+  src/main.c, src/showscore.c: Complete new handling of mults_possible[] length
+
+2011-09-30  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c: Prepare factorization of addmult() and addmult2()  Prepare
+  factorization of lookup of possible mults and worked mults
+
+2011-09-24  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c, src/tlf.h: Report unsupported config keywords during
+  startup
+
+  * rules/arrldx_dx, rules/arrldx_usa, rules/arrlfd, rules/arrlss,
+  rules/contest, rules/cqww, rules/dxped, rules/eusprint, rules/lzdx,
+  rules/pacc_dx, rules/pacc_pa, rules/qso, rules/spdx_dx, rules/spdx_sp,
+  rules/ssa_mt, rules/template, rules/wpx, src/parse_logcfg.c: change keywords
+  in parse_logcfg.c to correspond to man page  The keywords for CQ_TU_MSG,
+  VKCQM and VKSPM were not recognized correctly. Fixed.  Adapt contest rules to
+  changed keywords.
+
+2011-10-01  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c, src/changepars.c, src/getexchange.c, src/globalvars.h,
+  src/main.c, src/showscore.c: Complete new handling of mults_possible[] length
+
+2011-09-30  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c: first steps to a rework multi scoring 
+
+2011-10-01  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/parse_logcfg.c, src/searchlog.c, tlf.1.in: Better handling
+  of lines from external multiplier file  - Allow comment lines (starting with
+  '#') - strip leading and trailing whitespace - drop empty lines  Furthermore
+  drop unneeded string variables and make global ones local.
+
+2011-02-03  Thomas Beierlein <tb@forth-ev.de>
+
+  * rules/arrldx_dx, rules/arrldx_usa, rules/arrlfd, rules/arrlss,
+  rules/contest, rules/cqww, rules/dxped, rules/eusprint, rules/lzdx,
+  rules/pacc_dx, rules/pacc_pa, rules/qso, rules/spdx_dx, rules/spdx_sp,
+  rules/ssa_mt, rules/template, rules/wpx: fix format and drop false comment in
+  rule files
+
+2011-09-24  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * share/logcfg.dat, src/main.c, src/parse_logcfg.c, src/showscore.c,
+  tlf.1.in: drop MANY_CALLS config statement
+
+  * datastructures: commented use of 'mults_possible' array
+
+2011-09-19  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/readcalls.c: Correct rescoring for WYSIWYG_* methods
+
+  * src/addmult.c: strip trailing spaces from comment for WYSIWYG_... handling 
+
+  * src/readcalls.c: Fixed handling of comments for WYSIWYG_ONCE and _MULTI  -
+  Old code dropped multi at first space in comment string. Changed to strip
+  only trailing spaces. Was so back before tlf-0.9.21
+
+  * src/readcalls.c, src/recall_exchange.c, src/searchcallarray.c: Fix wrong
+  use of callarray_nr
+
+2011-09-22  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c, src/changepars.c, src/getexchange.c, src/globalvars.h,
+  src/main.c, src/searchlog.c, src/showscore.c: Switch mults_possible[] to a
+  growing array.
+
+2011-09-21  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/searchlog.c: add comments and rearrange variable
+  definitions
+
+2011-09-20  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c: Logcfg.dat now allows >9 points for scoring  Fix
+  possible overflows if there are point declaration above 9 points. 
+
+2011-09-15  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * README: Add a summary description to README.  The summary was copied from
+  the TLF page on Savannah. It gives a short intro which is shown on GitHubs
+  TLF repo page.
+
+2011-07-26  Thomas Beierlein <tb@forth-ev.de>
+
+  * tlf.1.in: Drop ORION exception from RIGMODEL explanation
+
+2011-06-10  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/callinput.c, src/clear_display.c, src/getexchange.c, src/keyer.c,
+  src/logit.c, src/main.c, src/sendbuf.c: make curx and cury local variables
+
+2011-06-08  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/getpx.c, src/showinfo.c: Adding comments, small improvements, cleanup
+
+2011-05-31  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/log_to_disk.c, src/log_to_disk.h: add spot to bandmap for stations
+  worked in S&P
+
+2011-05-29  Thomas Beierlein <tb@forth-ev.de>
+
+  * config.h.in, configure.in: some modernisation
+
+2011-05-11  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/background_process.c, src/log_to_disk.c, src/log_to_disk.h,
+  src/logit.c, src/scroll_log.c: fixed handling of exclusive access to
+  log_to_disk
+
+2011-05-02  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/addcall.c, src/getctydata.c: simplify
+
+  * src/set_tone.c: drop unneeded calculation of speedstr
+
+2011-04-29  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/addcall.c, src/readcalls.c, src/searchcallarray.c: Fixed handling of
+  callarray entries
+
+2011-04-14  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/addmult.c: use #define instead of fixed value for number of bands
+
+  * src/addspot.c: spot broadcasts to other stations contains the identifier of
+  the sending station now
+
+  * src/addcall.c: add_call() remembers worked band now
+
+  * src/readcalls.c: regroup code fragment
+
+2011-03-03  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/searchlog.c: correct position of pfx in bottom line of check window
+
+2011-07-21  Thomas Beierlein <tb@forth-ev.de>
+
+  * Makefile.am, New_Bandmap.txt: add New_Bandmap.txt to EXTRA_DIST  File
+  contains description of new bandmap features.
+
+2011-07-23  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/grabspot.c: fix compilation without hamlib
+
+2011-07-06  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/callinput.c, src/grabspot.c: implemented scanning up and down in
+  grab_next()  switch keys: ctrl-g is for scanning now as Alt-g gets grabbed
+  from the terminal emulator
+
+2011-07-05  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/callinput.c: change meaning of Alt-G to jump to next spot
+
+  * src/bandmap.c, src/bandmap.h, src/grabspot.c: extended 'grab' function to
+  switch to next spot up- or downwards
+
+2011-07-04  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/grabspot.c: Grabspot switches to S&P if in run mode and remembers QRG
+
+  * src/bandmap.c, src/bandmap.h, src/grabspot.c, src/main.c, src/main.h:
+  started new grabspot implementation
+
+2011-06-28  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/bandmap.c, src/bandmap.h: First work on grabspot
+
+2011-06-27  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/bandmap.c, src/bandmap.h: restructure filtering
+
+2011-06-23  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/bandmap.c: add some comments
+
+  * src/bandmap.c: - rename 'spots' structure to 'allspots' - add mutex to
+  protect 'allspots' data structure
+
+2011-06-10  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/cluster_bg.c, src/getctydata.c, src/getctydata.h: implement getctynr
+  which does not change any global strings like pfstr, ituzone, countrynr,
+  continent and so on ... (port from tlf-1.0.5)
+
+2011-05-16  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/addspot.c, src/bandmap.c: fix display of reporting node
+
+2011-05-02  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/bandmap.c: Fix bandmap_show crashes
+
+2011-04-29  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/addcall.c, src/readcalls.c, src/searchcallarray.c: Fixed handling of
+  callarray entries
+
+2011-04-14  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/bandmap.c: bm_isdupe() respects worked band now
+
+  * src/bandmap.c: fix display of dupes in bandmap
+
+  * src/addspot.c: spot broadcasts to other stations contains the identifier of
+  the sending station now
+
+  * src/callinput.c: '.' calls new bm_menu() now
+
+  * src/bandmap.c, src/bandmap.h: bm_is_dupe() check implemented
+
+  * src/readcalls.c: regroup code fragment
+
+2011-03-09  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/cluster_bg.c: - drop display of old bandmap - call bm_show() to display
+  the new one
+
+2011-03-08  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/tlf.h: new definition of BANDINDEX_xx
+
+2011-03-07  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/Makefile.am, src/bandmap.c, src/bandmap.h, src/cluster_bg.c,
+  src/splitscreen.c: First work for new bandmap  - add bandmap.[ch] - call
+  according functions - bandmap stores freq in Hz as integers
+
+2011-02-24  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/showinfo.c: - correct display of 1A stations - simplify
+
+2011-02-25  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/bandmap.h: First steps to define the behaviour of the new bandmap
+
+2011-02-23  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/addcall.c, src/cluster_bg.c, src/searchcallarray.c, src/tlf.h: - fix
+  wrong false return value from searchcallarray - simplify
+
+2011-02-22  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/main.c, src/makelogline.c, src/score.c: simplify handling of score
+  points
+
+  * configure.in, src/Makefile.am, src/addcall.c, src/addspot.c,
+  src/callinput.c, src/cluster_bg.c, src/dxcc.c, src/dxcc.h, src/getctydata.c,
+  src/getmessages.c, src/getwwv.c, src/globalvars.h, src/main.c,
+  src/makelogline.c, src/muf.c, src/readctydata.c, src/score.c,
+  src/searchlog.c, src/showinfo.c, src/showpxmap.c, src/tlf.h: switch cty data
+  handling to growing arrays  needs GLib, so also add a check to configure.in
+
+2011-06-09  thomas beierlein <tb@forth-ev.de>
+	version 1.0.5
+	* fixes some nasty racing condition between bandmap code and 
+	  checkwindow. In result prefix in lower line of checkwindow
+	  got displayed wrong, but country was right.
+	  Thanks Martin OK1RR for reporting.
+
+2011-05-22  thomas beierlein <tb@forth-ev.de>
+	version 1.0.4
+	* fix for wrong handling of recalled exchange - 
+	  Thanks Martin OK1RR for reporting.
+	  - All calls from initial exchange file will be recognised even
+	    if part of a complex call, e.g. DL1CCL in LA/DL1CCL/p 
+	  - All calls from former QSO's have to be exact including any
+	    pre- or postcombination
+	  - Now complete exchange will be recalled (not only first word)
+
+2011-02-07  thomas beierlein <tb@forth-ev.de>
+	version 1.0.3
+	* fix buffer overflow in 'send_lan_message'
+	* fix wrong count of points and qso's for last band entry. 
+	  Thanks Martin OK1RR for reporting.
+
+2011-01-31  thomas beierlein <tb@forth-ev.de>
+	version 1.0.2
+	* fix bug in sendto call. cwdaemon needs a zero terminated string. 
+	  Thanks for reporting Andy G4KNO
+
+2011-01-15  thomas beierlein <tb@forth-ev.de>
+	version 1.0.1
+	* fix calculation of sun up and down time based on longitude
+	  from country description in cty.dat
+
+2011-01-13  thomas beierlein <tb@forth-ev.de>
+	* fix bug in cty.dat and in the routine which reads in the file
+
+2011-01-08  thomas beierlein <tb@forth-ev.de>
+	* fix logfile read error. Last QSO got reead twice.
+	* Optimize searchlog() for speed and also optimize partial call
+	  lookup.
+
+2010-12-23  thomas beierlein <tb@forth-ev.de>
+	version 1.0.0
+	* fix some possible buffer overflow in exchange handling for 
+	  cqww
+	* fix handling of changing RST, especially resetting the values to
+	  59/599
+	* make Backspace and Delete-Keys the same
+
+2010-12-19  thomas beierlein <tb@forth-ev.de>
+	* fix some code problems reported by Stephan F8FCE. Thanks.
+	* changed ESC handling in comment and call input field
+
+2010-12-04  thomas beierlein <tb@forth-ev.de>
+	* add new cty.dat provided by OK1RR
+	* fix typos in man page and clarify CQDELAY handling
+	* fix CQDELAY handling in parse_cfg
+
+2010-11-29  thomas beierlein <tb@forth-ev.de>
+	* fix parsing for MARKERDOTS and MARKERCALL keywords
+	* fix buffer overrun during write of markerfile
+	* add new callmaster file provided by OK1RR
+
+2010-10-18  thomas beierlein <tb@forth-ev.de>
+	* fix installation commands for 'make distcheck'
+
+2010-09-11  thomas beierlein <tb@forth-ev.de>
+	* fix calculation of sunrise and sunset times 
+	* fix calculation of QSO Rate
+	* some minor fixes of uninitialized variables
+
+2010-01-xx  thomas beierlein <tb@forth-ev.de>
+	* better recognition of hamlib install (tnx F8FCE)
+	* fix a lot of buffer overrun for string handling (as glibc and gcc
+	  use -D_FORTIFY_SOURCE for stricter checking of buffer overuns)
+	* rewrote handling of initial exchange file. It now allows empty 
+	  and comment lines (#) and spaces around the callsign. Leading 
+	  space before comment gets ignored.
+	* Fix input handling of notes.
+	* Fix autocq handling. First characters gets no longer swallowed.
+	* Drop code for old not functional LPT_KEYER and COM1_KEYER.
+	* strip autogenerated files from repository.
+
+2007-12-21  rein couperus <rein@couperus.com>
+
+	* changed searchlog.c ('possible calls')
+
+2007-12-18	rein couperus <rein@couperus.com>
+
+	* changed cluster_bg.c to fix possible buffer overflow
+	
+	* changed searchlog.c -> compare now starts at beginning of callsign.
+
+2003-09-10   dimiter (mitko) kroumov <lz3ny@bfra.org>
+        version 0.9.1:
+	
+	* added an autoRXVTdiscovery and a hack XTERM arrows by putting "linux" native driver 
+	as TERMinal in the environment.	
+
+	* Introduced WAZMULT (CQWW like) and ITUMULT switches as contest rule multipliers
+	
+	* logcfg.dat has been split up. added a new "rules/" directory for the contest rules file.
+
+
+2002-11-03   rein couperus <rein@couperus.com>
+
+  	version 0.8.6:
+
+	* bug  fixes: various modules
+
+	* fixed getctydata.c to interpret ctydb properly
+
+	* fixed bug in callinput.c allowing input of too many characters in call field
+
+	* added TIME_OFFSET to allow running PC on local time instaead of UTC
+
+	* added arrl sweepstakes contest with flexible exchange input
+
+2002-10-01   rein couperus <rein@couperus.com>
+
+  	version 0.8.1:
+
+	* various modules: added  frequency data, talk data and serialnr data network distribution
+
+	* added :info and :freq displays
+
+2002-09-07  rein couperus <rein@couperus.com>
+
+  	version 0.8.0:
+
+	* lancode.c, lancode.h: added networking module
+
+	* various modules:   major code changes to interface to the networking module
+		for log data and packet data distribution
+
+
+2002-08-30  rein couperus  <rein@couperus.com>
+
+ 	version 0.7.3:
+
+	* background_process.c:  added cw simulator mode
+
+	* changeparams.c: added command :simulator
+
+	* logit.c, call_input.c:  added simulator code
+
+	* main.c: added various global variables for cw simulator
+
+	* searchlog.c: fixed bug to enable working more than 20 JA's (now 999)
+
+
+2002-08-30  rein couperus  <rein@couperus.com>
+
+ 	version 0.7.2:
+
+	* configure.in : added --enable-hamlib to switch on Hamlib support
+
+	* sendtxinfo.c, main.c: changed the code to support library switch
+
+2002-08-21  rein couperus  <rein@couperus.com>
+
+	version 0.7.1:
+
+	* parse_logcfg.c:  added RIGPORT parameter
+
+	* clusterinfo.c : added ctrl-g support for spot list
+
+2002-08-21  rein couperus  <rein@couperus.com>
+
+	version 0.7.0:
+
+	* sendqrg.c:	added Hamlib support
+
+	* gettxinfo.c:   added Hamlib support
+
+	* parse_logconfig.c: added Hamlib support
+
+	* added rig.h
+
+2002-08-12  rein couperus  <rein@couperus.com>
+
+	version 0.6.1:
+
+	* splitscreen.c:  telnet client does now display correctly when
+		long buffers come in.
+
+	* preliminary fix for bandmap display
+
+	* added FIFO interface to cluster monitor
+
+	* added command to logcfg.dat:
+		FIFO_INTERFACE
+	  this starts a FIFO called clfile in the working directory for
+		added flexibility and backward compatability with previous
+		versions
+
+2002-08-08  rein couperus   <rein@couperus.com>
+
+	version 0.6.0:
+
+	* major rewrite of all routines making disk access. 
+
+	* Removed all system calls.
+
+	* included telnet client and tnc terminal based on splitscreen by
+		Dave Brown, N2RJT. Now fully integrated with tlf.
+
+	* Added commands to logcfg.com:
+		TELNETHOST, TELNETPORT
+		TNCPORT (1 or 2)
+
+
+
+	* callinput.c: ESCAPE now erases call + exchange
+
+	* show_score.c: Color change in header line
+
+	
+2002-07-21  rein couperus   <rein@couperus.com>
+
+	* searchlog.c:		now keeps logdata in ram to speed up dupe check
+					removed sys calls and reference to /tmp/tlf
+
+	* store_to disk.c	copy logdata into ram array
+
+	* delete_qso.c	remove qso from ram array
+
+	* edit_last.c		change qso in ram array
+
+	* readcalls.c		read qso data into ram array
+
+	* main.c                     added global qso array (3000 qso's)
+
+2002-07-21  rein couperus   <rein@couperus.com>
+
+	* searchlog.c: 		changed partials routine to run in RAM
+				added load_partials function
+
+	* main.c:		added load partials from disk
+
+	* time_update.c		removed disk acces to logfile every 5 secs
+
+	* score.c		changed cqww scoring (2 pts within NA)
+
+2002-07-14  Rein Couperus   <rein@couperus.com>
+
+	* edit_last.c:	added instert and delete
+
+	* removed call to tlf_deletelogline
+
+2002-07-13  Rein Couperus   <rein@couperus.com>
+
+	tlf-0.5.4.3:
+
+	* main.c:  	added   mixedmode parameter
+
+	* searchlog.c		added mixed mode capability to dupe logic
+
+	* writecabrillo.c	added  wysiwyg multiplier format and mixed capability
+
+	* changeparameters.c	added :CWMODE, :SSBMODE and :DIGIMODE commands
+
+	* show_help.c 	added new mode switch commands
+
+
+2002-07-07  Rein Couperus   <rein@couperus.com>
+
+	tlf-0.5.4.2:
+
+	* readcalls.c: fixed logic for wysiwyg multipliers
+
+	* getexchange.c : added "\" command
+
+
+2002-06-09  Rein Couperus   <rein@couperus.com>
+
+	tlf-0.5.4.1:  adjustments for bugs in debian floppy version
+		(delete last qso, write cabrillo)
+
+	* deleteqso.c:  killed the system call to script tlf_deletelogline, wrote
+		inline code to do the job.
+
+	*writecabrillo.c: removed system call to 'sed'
+
+2002-05-31 Rein Couperus   <rein@couperus.com>
+
+	tlf-0.5.4:
+
+	* tlf.h: added definition of EDITOR_E3
+
+	* various: added support for e3 editor (debian floppy )
+
+	* clusterinfo.c: read cl3file only if read successful
+
+2002-05-26 Rein Couperus   <rein@couperus.com>
+
+	tlf-0.5.3:
+
+	* getmessages.c:  don't initialize call and logfile name if present in logcfg.dat
+
+	* getctydata.c: bug fix:  calculate right cty for /P calls
+
+2002-05-26 Rein Couperus   <rein@couperus.com>
+
+	tlf-0.5.3:
+
+	*  score.c:  wpx + cqww: added 2 point mode for NA stations
+
+	* searchlog.c:  added red warning signal in case of call lock (check partials)
+
+	* parse_logcfg.c: added generic parameters 2EU3DX_POINTS, COUNTRY_MULT,
+		PORTABLE_MULT2 , SERIAL_EXCHANGE  for
+		use in logcfg.dat (e.g. in Region 1 field day..).
+
+	* added new parameters and logic to various files to enable "universal" contest
+
+	* edit_last.c : added new code to edit last qso ("@" command)
+
+2002-05-24 Rein Couperus   <rein@couperus.com>
+
+	tlf-0.5.2a: bug fixes:
+
+	* deleteqso.c:  fixed  call to tlf_deletelogline
+
+	* writecabrillo.c:  changed version to 0.5.2
+
+	New feature:  allow CW logging without external keyer....
+
+	* tlf.h: added #definition NO_KEYER
+
+	* write_keyer.c: check explicitly for presence of keyer
+
+	* parse_logcfg.c:  make default NO_KEYER
+
+	* main.c: initialize keyerport to NO_KEYER
+
+	* keyer.c: bail out if NO_KEYER
+
+	* sendbuf.c: bail out if NO_KEYER
+
+2002-05-24 Rein Couperus   <rein@couperus.com>
+
+	* tlf-0.5.2: Automatic generation of .paras file in working directory
+
+	* changed tlf_cleanup to automatically generate clfile and wwvfile at startup
+
+	* removed .paras, clfile, wwvfile and logfiles from /examples/xxx/
+
+	* added parameter MANY_CALLS to logcfg.dat
+
+	* added parameters POWERMULT to logcfg.dat (for arrlfd)
+
+	* update of scoring routine for arrlfd
+
+	* added larger partial call window
+
+
+
+2002-05-19  Rein Couperus  <rein@couperus.com>
+
+	* tlf-0.5.1: Initial version with automake and autoconf.
+

@@ -1,0 +1,8 @@
+SCRIPT_FILES = soundlog play_vk
+
+bin_SCRIPTS = $(SCRIPT_FILES)
+
+EXTRA_DIST = $(SCRIPT_FILES)
+
+CLEANFILES = *~
+
