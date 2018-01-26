@@ -1,5 +1,13 @@
 use strict;
 
+#
+# Note: version 2.1-3 has two more functions in CU_SuiteInfo (setup+teardown)
+# Travis (trusty) has only version 2.1-2
+#
+my $cunit_version = qx(dpkg -s libcunit1 | awk '/^Version/ {print \$2}');
+chomp $cunit_version;
+print "// CUnit version $cunit_version\n";
+
 my $functions = '';
 my $suites = '';
 my $tests = '';
@@ -14,7 +22,6 @@ for my $c (glob 'test_*.c') {
     $tests .= "// $suite_name\n";
     my $ntests = 0;
 
-#    my $src;
     open(my $src, $c) or die;
     while (<$src>) {
         if (/^(int (init_${suite_name})\(void\))/) {
@@ -39,16 +46,14 @@ for my $c (glob 'test_*.c') {
     close($src);
 
     $suites .= "{\"$suite_name\", $init_func, $clean_func," 
-                . " $setup_func, $teardown_func, tests + $tests_offset},\n";
+                . ($cunit_version gt '2.1-3' ? " $setup_func, $teardown_func," : '')
+                . " tests + $tests_offset},\n";
 
     $tests .= "CU_TEST_INFO_NULL,\n";
     $tests_offset += $ntests + 1;
 
 }
 
-#print "funcs=\n$functions\n";
-#print "tests=\n$tests\n";
-#print "suites=\n$suites\n";
 print <<EOT
 //== function declarations
 $functions

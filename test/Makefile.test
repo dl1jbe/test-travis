@@ -2,10 +2,12 @@
 TEST_SOURCES := $(wildcard test_*.c)
 TEST_OBJS := $(patsubst test_%.c,../src/%.o,$(TEST_SOURCES))
 
-test: run.c $(TEST_SOURCES)
+test: run
+	./run
+
+run: run.c $(TEST_SOURCES)
 	perl generate_defs.pl > defs.h
 	cc -O2 -Wall $^ -I../src $(TEST_OBJS) -lcunit -o run
-	./run
 
 clean:
 	rm -f run *.o
