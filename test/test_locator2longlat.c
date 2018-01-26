@@ -15,3 +15,11 @@ void test_qra_short(void) {
     CU_ASSERT(1 == check_qra("JN"));
 }
 
+void test_qra_ok4(void) {
+    CU_ASSERT(0 == check_qra("JN97"));
+}
+
+void test_qra_ok6(void) {
+    CU_ASSERT(0 == check_qra("JN97ab"));
+}
+
