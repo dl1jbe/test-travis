@@ -7,5 +7,5 @@ before_install:
   
 script: 
   - autoreconf -i && ./configure --enable-hamlib && make   
-  - autoreconf -i && ./configure --enable-hamlib --enable-fldgi-xmlrpc && make   
+  - make clean && ./configure --enable-hamlib --enable-fldigi-xmlrpc && make   
 
