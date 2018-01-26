@@ -6,7 +6,7 @@ sudo: required
 
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y libhamlib-dev
+  - sudo apt-get install -y libhamlib-dev libcunit1-dev
   
-script: autoreconf -i && ./configure --enable-hamlib && make   
+script: autoreconf -i && ./configure --enable-hamlib && make && cd test && make -f Makefile.test clean test
 
