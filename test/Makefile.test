@@ -10,5 +10,5 @@ run: run.c $(TEST_SOURCES)
 	cc -O2 -Wall $^ -I../src $(TEST_OBJS) -lcunit -o run
 
 clean:
-	rm -f run *.o
+	rm -f run defs.h *.o
 
