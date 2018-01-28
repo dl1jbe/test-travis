@@ -23,3 +23,5 @@ src/.deps
 src/cscope.out
 src/.gdbinit
 stamp-h1
+test/defs.h
+test/run
