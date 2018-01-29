@@ -1,5 +1,5 @@
 
-#include "getpx.h"
+#include "../src/getpx.h"
 
 #include "CUnit/Basic.h"
 
