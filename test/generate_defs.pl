@@ -1,19 +1,34 @@
 use strict;
 
+open(my $H, '> defs.h') or die;
+open(my $AM, '> defs.am') or die;
+
+my $ts = scalar(localtime);
+print $H "// generated on $ts\n\n";
+print $AM "# generated on $ts\n\n";
+
 #
 # Note: version 2.1-3 has two more functions in CU_SuiteInfo (setup+teardown)
 # Travis (trusty) has only version 2.1-2
 #
 my $cunit_version = qx(dpkg -s libcunit1 | awk '/^Version/ {print \$2}');
 chomp $cunit_version;
-print "// CUnit version $cunit_version\n";
+print $H "// CUnit version $cunit_version\n";
 
 my $functions = '';
 my $suites = '';
 my $tests = '';
 my $tests_offset = 0;
+my $sources = '';
+my $objects = '';
 
 for my $c (glob 'test_*.c') {
+
+    $sources .= " $c";
+    my $obj = "../src/$c";
+    $obj =~ s/test_//;
+    $obj =~ s/c$/o/;
+    $objects .= " $obj";
 
     my $suite_name = substr($c, 5, -2);
 
@@ -54,7 +69,7 @@ for my $c (glob 'test_*.c') {
 
 }
 
-print <<EOT
+print $H <<EOT;
 //== function declarations
 $functions
 
@@ -70,3 +85,7 @@ $suites
 };
 EOT
 
+print $AM "TEST_SRCS=$sources\nTEST_OBJS=$objects\n";
+
+close($H);
+close($AM);

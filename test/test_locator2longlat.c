@@ -1,5 +1,5 @@
 
-#include "locator2longlat.h"
+#include "../src/locator2longlat.h"
 
 #include "CUnit/Basic.h"
 

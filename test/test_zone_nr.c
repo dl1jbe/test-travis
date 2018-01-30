@@ -1,5 +1,5 @@
 
-#include "zone_nr.h"
+#include "../src/zone_nr.h"
 
 #include "CUnit/Basic.h"
 

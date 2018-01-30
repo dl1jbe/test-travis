@@ -9,18 +9,21 @@ int main() {
     if (CUE_SUCCESS != CU_initialize_registry())
         return CU_get_error();
 
+    /* register suites and their tests */
     if (CUE_SUCCESS != CU_register_suites(suites)) {
         CU_cleanup_registry();
         return CU_get_error();
     }
 
-    /* Run all tests using the CUnit Basic interface */
+    /* run all tests using the CUnit Basic interface */
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
 
+    int n_fails = CU_get_number_of_failure_records();
+
     CU_cleanup_registry();
 
-    return CU_get_error();
+    return n_fails;
 }
 
 
