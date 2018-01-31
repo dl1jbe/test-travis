@@ -1,91 +1,106 @@
 use strict;
 
-open(my $H, '> defs.h') or die;
-open(my $AM, '> defs.am') or die;
-
-my $ts = scalar(localtime);
-print $H "// generated on $ts\n\n";
-print $AM "# generated on $ts\n\n";
+my %groups;
 
 #
-# Note: version 2.1-3 has two more functions in CU_SuiteInfo (setup+teardown)
-# Travis (trusty) has only version 2.1-2
+# scan test sources
 #
-my $cunit_version = qx(dpkg -s libcunit1 | awk '/^Version/ {print \$2}');
-chomp $cunit_version;
-print $H "// CUnit version $cunit_version\n";
-
-my $functions = '';
-my $suites = '';
-my $tests = '';
-my $tests_offset = 0;
-my $sources = '';
-my $objects = '';
 
 for my $c (glob 'test_*.c') {
 
-    $sources .= " $c";
-    my $obj = "../src/$c";
-    $obj =~ s/test_//;
-    $obj =~ s/c$/o/;
-    $objects .= " $obj";
+    my $group_name = substr($c, 5, -2);
 
-    my $suite_name = substr($c, 5, -2);
-
-    my ($init_func, $clean_func, $setup_func, $teardown_func);
-    $init_func = $clean_func = $setup_func = $teardown_func = 'NULL';
-    $tests .= "// $suite_name\n";
-    my $ntests = 0;
-
-    open(my $src, $c) or die;
-    while (<$src>) {
-        if (/^(int (init_${suite_name})\(void\))/) {
-            $init_func = $2;
-            $functions .= "$1;\n";
-        } elsif (/^(int (clean_${suite_name})\(void\))/) {
-            $clean_func = $2;
-            $functions .= "$1;\n";
-        } elsif (/^(int (setup_${suite_name})\(void\))/) {
-            $setup_func = $2;
-            $functions .= "$1;\n";
-        } elsif (/^(int (teardown_${suite_name})\(void\))/) {
-            $teardown_func = $2;
-            $functions .= "$1;\n";
-        } elsif (/^(void test_(\w+)\(void\))/) {
-            my $test_name = $2;
-            $functions .= "$1;\n";
-            $tests .= "{\"$test_name\", test_$test_name},\n";
-            ++$ntests;
+    open(my $SRC, $c) or die;
+    while (<$SRC>) {
+        if (/\/\/ OBJECT (\S+)/) {
+            push @{$groups{$group_name}{OBJECTS}}, $1;
+            next;
+        }
+        if (/^((int|void) ((setup|teardown|test)(_\w+)?)\(void \*\*\w+\))/) {
+            ${$groups{$group_name}{FUNCTIONS}}{$3} = $1;
+            # check if it's a test function
+            if ($2 eq 'void') {
+                my $name =  substr($3, 5);
+                push @{$groups{$group_name}{TESTS}}, $name;
+            }
+            next;
         }
     } 
-    close($src);
-
-    $suites .= "{\"$suite_name\", $init_func, $clean_func," 
-                . ($cunit_version gt '2.1-3' ? " $setup_func, $teardown_func," : '')
-                . " tests + $tests_offset},\n";
-
-    $tests .= "CU_TEST_INFO_NULL,\n";
-    $tests_offset += $ntests + 1;
+    close($SRC);
 
 }
 
-print $H <<EOT;
-//== function declarations
-$functions
+#
+# genarate defs.am and sources for run's
+#
 
-//== tests
-CU_TestInfo tests[] = {
-$tests
-};
+open(my $AM, '> defs.am') or die;
 
-//== suites
-CU_SuiteInfo suites[] = {
-$suites
-  CU_SUITE_INFO_NULL,
-};
+my $ts = scalar(localtime);
+print $AM "# generated on $ts\n\n";
+
+my $tests = '';
+for my $g (sort keys %groups) {
+    $tests .= " run_$g";
+}
+print $AM "TESTS =$tests\n\n";
+print $AM "check_PROGRAMS =$tests\n\n";
+
+for my $g (sort keys %groups) {
+    my $objects = join(' ',@{$groups{$g}{OBJECTS}});
+    print $AM <<EOT;
+run_${g}_SOURCES = run_${g}.c test_${g}.c data.c functions.c
+run_${g}_LDADD = $objects
+
 EOT
 
-print $AM "TEST_SRCS=$sources\nTEST_OBJS=$objects\n";
+    open(my $C, "> run_${g}.c") or die;
+    print $C <<EOT;
+// generated on $ts
+#include <stdarg.h>
+#include <stddef.h>
+#include <setjmp.h>
+#include <cmocka.h>
 
-close($H);
+EOT
+    for my $f (sort keys %{$groups{$g}{FUNCTIONS}}) {
+        print $C "${$groups{$g}{FUNCTIONS}}{$f};\n";
+    }
+
+    print $C <<EOT;
+
+int main(void) {
+    const struct CMUnitTest tests[] = {
+EOT
+    my ($setup, $teardown);
+
+    for my $t (@{$groups{$g}{TESTS}}) {
+        $setup = $teardown = 'NULL';
+        if (defined ${$groups{$g}{FUNCTIONS}}{"setup_$t"}) {
+            $setup = "setup_$t";
+        } elsif (defined ${$groups{$g}{FUNCTIONS}}{setup_default}) {
+            $setup = 'setup_default';
+        }
+        print $C "      cmocka_unit_test_setup_teardown(test_${t}, ${setup}, ${teardown}),\n";
+    }
+
+    $setup = $teardown = 'NULL';
+    if (defined ${$groups{$g}{FUNCTIONS}}{setup}) {
+        $setup = 'setup';
+    }
+    if (defined ${$groups{$g}{FUNCTIONS}}{teardown}) {
+        $teardown = 'teardown';
+    }
+
+    print $C <<EOT;
+    };
+
+    return cmocka_run_group_tests(tests, ${setup}, ${teardown});
+}
+EOT
+    close($C);
+}
+
 close($AM);
+
+

@@ -1,25 +1,18 @@
+#include "test.h"
 
 #include "../src/locator2longlat.h"
 
-#include "CUnit/Basic.h"
+// OBJECT ../src/locator2longlat.o
 
-int init_locator2longlat(void) {
-    return 0;
+void test_qra_short(void **state) {
+    assert_int_equal(check_qra("JN"), 1);
 }
 
-int clean_locator2longlat(void) {
-    return 0;
+void test_qra_ok4(void **state) {
+    assert_int_equal(check_qra("JN97"), 0);
 }
 
-void test_qra_short(void) {
-    CU_ASSERT(1 == check_qra("JN"));
-}
-
-void test_qra_ok4(void) {
-    CU_ASSERT(0 == check_qra("JN97"));
-}
-
-void test_qra_ok6(void) {
-    CU_ASSERT(0 == check_qra("JN97ab"));
+void test_qra_ok6(void **state) {
+    assert_int_equal(check_qra("JN97ab"), 0);
 }
 

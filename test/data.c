@@ -70,7 +70,7 @@ int cwpoints;
 int lowband_point_mult = 0;
 int sc_sidetone;
 char sc_volume[4] = "";
-  /* LZ3NY mods */
+/* LZ3NY mods */
 int my_country_points = -1;
 int my_cont_points = -1;
 int dx_cont_points = -1;
@@ -130,7 +130,8 @@ char exchange_list[40] = "";
 int timeoffset = 0;
 int multi = 0;			/* 0 = SO , 1 = MOST, 2 = MM */
 int trxmode = CWMODE;
-int rigmode = 0;		/* RIG_MODE_NONE in hamlib/rig.h, but if hamlib not compiled, then no dependecy */
+/* RIG_MODE_NONE in hamlib/rig.h, but if hamlib not compiled, then no dependecy */
+int rigmode = 0;
 int mixedmode = 0;
 char his_rst[4] = "599";
 char my_rst[4] = "599";
@@ -180,15 +181,17 @@ char message[25][80] = /**< Array of CW/DigiMode messages
 			* additional use if in CTCOMP mode
 			* message[1]  (F2)  - insert pressed
  			*/
-    { "TEST %\n", "@ DE %\n", "@ [\n", "TU 73\n", " @\n", "%\n",
-	"@ SRI QSO B4 GL\n", "AGN\n",
-	" ?\n", " QRZ?\n", " PSE K\n", "TEST % %\n", "@ [\n", "TU %\n",
-	"", "", "", "", "", "", "", "", "", "", "" };
+{
+    "TEST %\n", "@ DE %\n", "@ [\n", "TU 73\n", " @\n", "%\n",
+    "@ SRI QSO B4 GL\n", "AGN\n",
+    " ?\n", " QRZ?\n", " PSE K\n", "TEST % %\n", "@ [\n", "TU %\n",
+    "", "", "", "", "", "", "", "", "", "", ""
+};
 
 char ph_message[14][80] = /**< Array of file names for voice keyer messages
 			   * See description of message[]
 			   */
-	{ "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
+{ "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
 
 char qtc_recv_msgs[12][80] = {"QTC?\n", "QRV\n", "R\n", "", "TIME?\n", "CALL?\n", "NR?\n", "AGN\n", "", "QSL ALL\n", "", ""}; // QTC receive windowS Fx messages
 char qtc_send_msgs[12][80] = {"QRV?\n", "QTC sr/nr\n", "", "", "TIME\n", "CALL\n", "NR\n", "", "", "", "", ""}; // QTC send window Fx messages
@@ -212,7 +215,7 @@ int early_started = 0;			/**< 1 if sending call started early,
 char lastcall[20];
 char qsonrstr[5] = "0001";
 char band[NBANDS][4] =
-    { "160", " 80", " 40", " 30", " 20", " 17", " 15", " 12", " 10" };
+{ "160", " 80", " 40", " 30", " 20", " 17", " 15", " 12", " 10" };
 char comment[80];
 char mode[20] = "Log     ";
 char cqzone[3] = "";
@@ -236,11 +239,13 @@ int partials = 0;	/**< show partial calls */
 int use_part = 0;	/**< if 1 use automatically found partial call */
 int block_part = 0; 	/**< if 1 block the call autocompletion
 			  for these QSO */
-char para_word[80] = "LODNCFS:3C\n";	/* longcw, cluster, search,  DE, contest, filter,  speed,  delay */
+char para_word[80] =
+    "LODNCFS:3C\n";	/* longcw, cluster, search,  DE, contest, filter,  speed,  delay */
 char lastmsg[1000] = "";
-int scale_values[20] =
-    { 40, 38, 36, 34, 32, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6,
-4, 2 };
+int scale_values[20] = {
+    40, 38, 36, 34, 32, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6,
+    4, 2
+};
 char sc_device[40] = "/dev/dsp";
 
 /*-------------------------------------keyer------------------------------*/
@@ -306,7 +311,7 @@ char tonecpy[5];
 char simulator_tone[5];
 
 /*-------------------------------the log lines-----------------------------*/
-char qsos[MAX_QSOS][LOGLINELEN+1];
+char qsos[MAX_QSOS][LOGLINELEN + 1];
 int nr_qsos = 0;
 
 /*------------------------------dupe array---------------------------------*/
@@ -353,16 +358,17 @@ int logfrequency = 0;
 int rit;
 int trx_control = 0;
 int showfreq = 0;
-float bandfrequency[9] =
-    { 1830.0, 3525.0, 7010.0, 10105.0, 14025.0, 18070.0, 21025.0, 24900.0,
-28025.0 };
+float bandfrequency[9] = {
+    1830.0, 3525.0, 7010.0, 10105.0, 14025.0, 18070.0, 21025.0, 24900.0,
+    28025.0
+};
 
 char headerline[81] =
     "   1=CQ  2=DE  3=RST 4=73  5=HIS  6=MY  7=B4   8=AGN  9=?  \n";
 char backgrnd_str[81] =
     "                                                                                ";
 
-char logline_edit[5][LOGLINELEN+1];
+char logline_edit[5][LOGLINELEN + 1];
 
 char terminal1[88] = "";
 char terminal2[88] = "";
@@ -433,9 +439,9 @@ int mvprintw(int y, int x, const char *fmt, ...) {
 #define gsize int
 #define gchar char
 gsize
-g_strlcat (gchar *dest,
-           const gchar *src,
-           gsize dest_size) {
+g_strlcat(gchar *dest,
+	  const gchar *src,
+	  gsize dest_size) {
     return 0;
 }
 #endif
