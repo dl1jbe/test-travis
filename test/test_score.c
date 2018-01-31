@@ -1,9 +1,4 @@
-#include <stdarg.h>
-#include <stddef.h>
-#include <setjmp.h>
-#include <string.h>
-//#include <cmocka.h>
-#include "CUnit/Basic.h"
+#include "test.h"
 
 #include "../src/score.h"
 #include "../src/tlf.h"
@@ -11,9 +6,21 @@
 
 #include "../src/globalvars.h"
 
+// OBJECT ../src/score.o
+// OBJECT ../src/addmult.o
+// OBJECT ../src/dxcc.o
+// OBJECT ../src/focm.o
+// OBJECT ../src/getctydata.o
+// OBJECT ../src/qrb.o
+// OBJECT ../src/locator2longlat.o
+// OBJECT ../src/getpx.o
+
 // ===========
 // these are missing from globalvars
 extern int dupe;
+extern int cwpoints;
+extern int ssbpoints;
+extern int mycountrynr;
 extern int my_country_points;
 extern int my_cont_points;
 extern int dx_cont_points;
@@ -28,74 +35,39 @@ extern int lowband_point_mult;
 extern int portable_x2;
 // ===========
 
-int exist_in_country_list();
-int readctydata(void);
-
 #define check_points(point) \
-    do{ CU_ASSERT_EQUAL(score(), point); }while(0)
-//    do{ assert_int_equal(score(), point); }while(0)
+    do{ assert_int_equal(score(), point); }while(0)
 
 #define check_call_points(call,point) \
     do{ strcpy(hiscall, call); \
-        CU_ASSERT_INT_EQUAL(score(), point); }while(0)
-//	assert_int_equal(score(), point); }while(0)
+	assert_int_equal(score(), point); }while(0)
 
 #if 0
-char hiscall[20];
-char call[20];
-char comment[80];
-char pxstr[11];
-char continent[3];
-char cqzone[3], ituzone[3], zone_export[3];
-int itumult= 0;
-char lan_logline[256];
-int points, total;
-int countrynr, dupe;
-int bandinx = 1;
-int band_score[9];
-
-char mycontinent[3] = "EU";
-int mycountrynr = 95; 	/* DL */
-int w_cty = 184; 	/* W */
-int ve_cty = 283; 	/* VE */
-
-int trxmode = CWMODE;
-
-int arrldx_usa, wpx, pfxmult, cqww, arrl_fd, one_point, two_point, three_point;
-int focm, stewperry_flg;
-int cwpoints, ssbpoints;
-int lowband_point_mult, portable_x2;
-int my_country_points, my_cont_points, dx_cont_points;
-int countrylist_only, countrylist_points;
-char countrylist[255][6];
-int continentlist_only, continentlist_points;
-char continent_multiplier_list[7][3];
-
-int bandweight_points[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
-
-#define malloc test_malloc
-#define free   test_free
-#endif
-
-void __wrap_qrb(char *x, char *y, char *u, char *v, double *a, double *b)
-{
+void __wrap_qrb(char *x, char *y, char *u, char *v, double *a, double *b) {
 }
 
-int __wrap_foc_score()
-{
+int __wrap_foc_score() {
+    return 0;
+}
+#endif
+
+int setup(void **state) {
+
+    strcpy(myqra, "jo60lx");
+
+    strcpy(mycontinent, "EU");
+
+    mycountrynr = 95;   /* DL */
+    w_cty = 184;        /* W */
+    ve_cty = 283;       /* VE */
+
+    trxmode = CWMODE;
+
     return 0;
 }
 
-#if 0
-void refreshp() {
+int setup_default(void **state) {
 
-}
-#endif
-
-//! char myqra[7]="jo60lx";
-
-//static int setup(void **state) {
-int init_score(void) {
     cqww = 0;
     wpx = 0;
     pfxmult = 0;
@@ -126,29 +98,27 @@ int init_score(void) {
     return 0;
 }
 
-int setup_cty(void **state) {
-//!    setup(state);
+int setup_ssbcw(void **state) {
+    setup_default(state);
     /* TODO */
     /* load_ctydata needs means to destroy the database */
-//!    assert_int_equal(load_ctydata("../share/cty.dat"), 0);
+    assert_int_equal(load_ctydata("../share/cty.dat"), 0);
 
     return 0;
 }
 
 
-//static void dupe_test(void **state) {
-void test_dupe(void) {
+void test_dupe(void **state) {
     dupe = 1;
     check_points(0);
 }
 
-#if 0
-static int teardown(void **state) {
+int teardown_default(void **state) {
     return 0;
 }
 
 
-static void wpx_test(void **state) {
+void test_wpx(void **state) {
     wpx = 1;
     pfxmult = 0;
 
@@ -185,7 +155,7 @@ static void wpx_test(void **state) {
 }
 
 
-static void cqww_test(void **state) {
+void test_cqww(void **state) {
     cqww = 1;
 
     countrynr = mycountrynr;
@@ -205,7 +175,7 @@ static void cqww_test(void **state) {
     check_points(3);
 }
 
-static void arrl_fd_test(void **state) {
+void test_arrl_fd(void **state) {
     arrl_fd = 1;
 
     trxmode = CWMODE;
@@ -217,7 +187,7 @@ static void arrl_fd_test(void **state) {
 }
 
 
-static void simple_points_test(void **state) {
+void test_simple_points(void **state) {
     one_point = 1;
     check_points(1);
     one_point = 0;
@@ -230,7 +200,7 @@ static void simple_points_test(void **state) {
     check_points(3);
 }
 
-static void arrldx_usa_test(void **state) {
+void test_arrldx_usa(void **state) {
     arrldx_usa = 1;
 
     countrynr = w_cty;
@@ -243,7 +213,7 @@ static void arrldx_usa_test(void **state) {
     check_points(3);
 }
 
-static void ssbcw_test(void **state) {
+void test_ssbcw(void **state) {
     check_points(0);
 
     ssbpoints = 3;
@@ -271,14 +241,14 @@ static void ssbcw_test(void **state) {
     check_points(0);
 }
 
-void init_countrylist() {
+static void init_countrylist() {
     strcpy(countrylist[0], "OE");
     strcpy(countrylist[1], "DL");
     strcpy(countrylist[2], "W");
     strcpy(countrylist[3], "");
 }
 
-static void country_found_test(void **state) {
+void test_country_found(void **state) {
     /* nothing to find in empty list */
     strcpy(hiscall, "LZ1AB");
     assert_int_equal(country_found(""), 0);
@@ -294,7 +264,7 @@ static void country_found_test(void **state) {
     assert_int_equal(country_found(""), 1);
 }
 
-static void scoreByCorC_listOnly_test(void ** state) {
+void test_scoreByCorC_listOnly(void **state) {
     countrylist_only = 1;
     check_call_points("LZ1AB", 0);
     check_call_points("DL3XYZ", 0);
@@ -308,7 +278,7 @@ static void scoreByCorC_listOnly_test(void ** state) {
     check_call_points("DL3XYZ", 4);
 }
 
-static void scoreByCorC_notInList_test(void ** state) {
+void test_scoreByCorC_notInList(void **state) {
 
     /* my_country/cont_points and dx_cont_points not set */
     check_call_points("DL3XYZ", 0);
@@ -332,7 +302,7 @@ static void scoreByCorC_notInList_test(void ** state) {
 }
 
 
-static void scoreByCorC_InList_test(void ** state) {
+void test_scoreByCorC_InList(void **state) {
     init_countrylist();
 
     /* countrylist_points, my_country_points and my_cont_points
@@ -358,27 +328,4 @@ static void scoreByCorC_InList_test(void ** state) {
     check_call_points("DL3XYZ", 1);
     check_call_points("K3XX", 3);
 }
-#endif
 
-#if 0
-int main(void) {
-    const struct CMUnitTest tests[] = {
-	cmocka_unit_test_setup_teardown(dupe_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(wpx_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(cqww_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(arrl_fd_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(simple_points_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(arrldx_usa_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(ssbcw_test, setup_cty, teardown),
-	cmocka_unit_test_setup_teardown(country_found_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(scoreByCorC_listOnly_test,
-	    setup, teardown),
-	cmocka_unit_test_setup_teardown(scoreByCorC_notInList_test,
-	    setup, teardown),
-	cmocka_unit_test_setup_teardown(scoreByCorC_InList_test,
-	    setup, teardown),
-    };
-
-    return cmocka_run_group_tests(tests, NULL, NULL);
-}
-#endif

@@ -9,5 +9,5 @@ before_install:
 script: 
   - autoreconf -i && ./configure --enable-hamlib && make   
   - make clean && ./configure --enable-hamlib --enable-fldigi-xmlrpc && make
-  - make check && cat test/run.log
+  - make check; rc=$?; cat test/run_*.log; exit $rc
 
