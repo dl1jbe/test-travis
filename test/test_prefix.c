@@ -11,7 +11,7 @@ int letters_only(const char *call);
     do{ getpx(call); assert_string_equal(pxstr, pfx); }while(0)
 
 
-char pxstr[100];
+extern char pxstr[];
 
 void test_letters_only_yes(void **state) {
     assert_int_equal(letters_only("RAEM"), 1);
